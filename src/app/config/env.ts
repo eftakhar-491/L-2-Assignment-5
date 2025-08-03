@@ -14,6 +14,17 @@ interface EnvConfig {
   FRONTEND_URL: string;
   SUPER_ADMIN_EMAIL: string;
   SUPER_ADMIN_PASSWORD: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  GOOGLE_CALLBACK_URL?: string;
+  EXPRESS_SESSION_SECRET?: string;
+  EMAIL_SENDER: {
+    SMTP_USER: string;
+    SMTP_PASS: string;
+    SMTP_PORT: string;
+    SMTP_HOST: string;
+    SMTP_FROM: string;
+  };
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -25,11 +36,19 @@ const loadEnvVariables = (): EnvConfig => {
     "JWT_ACCESS_SECRET",
     "JWT_REFRESH_SECRET",
     "JWT_REFRESH_EXPIRES",
-
     "FRONTEND_URL",
     "JWT_ACCESS_EXPIRES",
     "SUPER_ADMIN_EMAIL",
     "SUPER_ADMIN_PASSWORD",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_CALLBACK_URL",
+    "EXPRESS_SESSION_SECRET",
+    "SMTP_PASS",
+    "SMTP_PORT",
+    "SMTP_HOST",
+    "SMTP_USER",
+    "SMTP_FROM",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -50,6 +69,17 @@ const loadEnvVariables = (): EnvConfig => {
     FRONTEND_URL: process.env.FRONTEND_URL as string,
     SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL!,
     SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD!,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
+    EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET,
+    EMAIL_SENDER: {
+      SMTP_USER: process.env.SMTP_USER!,
+      SMTP_PASS: process.env.SMTP_PASS!,
+      SMTP_PORT: process.env.SMTP_PORT!,
+      SMTP_HOST: process.env.SMTP_HOST!,
+      SMTP_FROM: process.env.SMTP_FROM!,
+    },
   };
 };
 

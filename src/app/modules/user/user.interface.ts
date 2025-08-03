@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export enum Role {
-  SUPER_ADMIN = "SUPER_ADMIN",
+  SUPER_ADMIN = "SUPER_ADMIN", // aita implement kora hoy nai
   ADMIN = "ADMIN",
   RIDER = "RIDER",
   DRIVER = "DRIVER",
