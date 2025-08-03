@@ -18,6 +18,7 @@ interface EnvConfig {
   GOOGLE_CLIENT_SECRET?: string;
   GOOGLE_CALLBACK_URL?: string;
   EXPRESS_SESSION_SECRET?: string;
+  GEO_API_KEY: string;
   EMAIL_SENDER: {
     SMTP_USER: string;
     SMTP_PASS: string;
@@ -49,6 +50,7 @@ const loadEnvVariables = (): EnvConfig => {
     "SMTP_HOST",
     "SMTP_USER",
     "SMTP_FROM",
+    "GEO_API_KEY",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -80,6 +82,7 @@ const loadEnvVariables = (): EnvConfig => {
       SMTP_HOST: process.env.SMTP_HOST!,
       SMTP_FROM: process.env.SMTP_FROM!,
     },
+    GEO_API_KEY: process.env.GEO_API_KEY!,
   };
 };
 
