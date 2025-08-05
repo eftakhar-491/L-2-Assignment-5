@@ -20,14 +20,14 @@ const createRide = catchAsync(
 );
 const updateRide = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const updatedRide = await rideService.updateRide(req.body, req);
+    const updatedRide = await rideService.updateRide(req.body, req, next);
 
-    // sendResponse(res, {
-    //   success: true,
-    //   statusCode: httpStatus.CREATED,
-    //   message: "Ride requested successfully",
-    //   data: newRide,
-    // });
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Ride status updated successfully",
+      data: updatedRide,
+    });
   }
 );
 

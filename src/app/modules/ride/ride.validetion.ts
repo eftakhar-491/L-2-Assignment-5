@@ -4,7 +4,13 @@ import { RideStatus } from "./ride.interface";
 export const createRideZodSchema = z.object({
   rider: z.string({ message: "Rider ID must be a string" }),
   driver: z.string({ message: "Driver ID must be a string" }).optional(),
-
+  otp: z
+    .number({ message: "OTP must be a number" })
+    .min(1000, { message: "OTP must be at least 4 digits." })
+    .max(9999, { message: "OTP cannot exceed 4 digits." }),
+  fee: z
+    .number({ message: "Fee must be a number" })
+    .min(0, { message: "Fee cannot be negative." }),
   pickupLocation: z.object({
     address: z
       .string({ message: "Pickup address must be a string" })

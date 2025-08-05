@@ -22,4 +22,6 @@ export interface IRide {
   status: RideStatus;
   createdAt?: Date;
   updatedAt?: Date;
+  otp: number;
+  fee: number;
 }

@@ -15,7 +15,7 @@ route.post(
 );
 route.put(
   "/update-ride/:id",
-  checkAuth(Role.RIDER),
+  checkAuth(Role.DRIVER, Role.RIDER),
   validateRequest(updateRideZodSchema),
   rideController.updateRide
 );
