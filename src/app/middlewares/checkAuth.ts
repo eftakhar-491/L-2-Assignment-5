@@ -23,7 +23,7 @@ export const checkAuth =
       ) as JwtPayload;
 
       const isUserExist = await User.findOne({ email: verifiedToken.email });
-
+      console.log(isUserExist);
       if (!isUserExist) {
         throw new AppError(httpStatus.BAD_REQUEST, "User does not exist");
       }
@@ -31,7 +31,7 @@ export const checkAuth =
         throw new AppError(httpStatus.BAD_REQUEST, "User is not verified");
       }
       if (
-        isUserExist.isActive === IsActive.BLOCKED ||
+        isUserExist.isActive === IsActive.BLOCK ||
         isUserExist.isActive === IsActive.INACTIVE
       ) {
         throw new AppError(

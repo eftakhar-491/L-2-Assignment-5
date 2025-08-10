@@ -11,14 +11,39 @@ import { setAuthCookie } from "../../utils/setCookie";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import { verifyToken } from "../../utils/jwt";
+import { Role } from "./user.interface";
+import { Admin, Driver, Rider } from "./user.model";
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = await UserServices.createUser(req.body);
+    let user;
     console.log(user);
+
+    const userRole = req.body.role;
+    switch (userRole) {
+      case Role.RIDER:
+        // Handle rider specific logic
+        user = await UserServices.createUser(req.body, Rider);
+        break;
+      case Role.DRIVER:
+        // Handle driver specific logic
+        user = await UserServices.createUser(req.body, Driver);
+        break;
+      case Role.ADMIN:
+        user = await UserServices.createUser(req.body, Admin);
+
+        break;
+      default:
+        throw new AppError(httpStatus.FORBIDDEN, "Invalid user role");
+    }
+    if (!user) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "User creation failed"
+      );
+    }
     const userTokens = await createUserTokens(user);
     const { password: $pass$, ...rest } = user.toObject();
-
     setAuthCookie(res, userTokens);
 
     sendResponse(res, {

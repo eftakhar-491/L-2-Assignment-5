@@ -7,7 +7,13 @@ export const createRideZodSchema = z.object({
   otp: z
     .number({ message: "OTP must be a number" })
     .min(1000, { message: "OTP must be at least 4 digits." })
-    .max(9999, { message: "OTP cannot exceed 4 digits." }),
+    .max(9999, { message: "OTP cannot exceed 4 digits." })
+    .optional(),
+  isRideOTPVerified: z
+    .boolean({
+      message: "isRideOTPVerified must be a boolean",
+    })
+    .optional(),
   fee: z
     .number({ message: "Fee must be a number" })
     .min(0, { message: "Fee cannot be negative." }),

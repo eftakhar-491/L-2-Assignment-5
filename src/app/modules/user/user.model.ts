@@ -1,43 +1,80 @@
-import { model, Schema } from "mongoose";
-import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const authProviderSchema = new Schema<IAuthProvider>(
-  {
-    provider: { type: String, required: true },
-    providerId: { type: String, required: true },
-  },
-  {
-    versionKey: false,
-    _id: false,
-  }
-);
+import {
+  IAdmin,
+  IDriver,
+  IRider,
+  IsActive,
+  IsAdminActive,
+  IsDriverActive,
+  IUser,
+  IVehicle,
+  Role,
+} from "./user.interface";
 
-const userSchema = new Schema<IUser>(
+const UserSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
-    role: {
-      type: String,
-      enum: Object.values(Role),
-      default: Role.RIDER,
-    },
     phone: { type: String },
     picture: { type: String },
     address: { type: String },
     isDeleted: { type: Boolean, default: false },
-    isActive: {
-      type: String,
-      enum: Object.values(IsActive),
-      default: IsActive.ACTIVE,
-    },
     isVerified: { type: Boolean, default: false },
-    auths: [authProviderSchema],
+    role: { type: String, enum: Object.values(Role), required: true },
+    auths: [
+      {
+        provider: {
+          type: String,
+          enum: ["google", "credentials"],
+          message: "Invalid authentication provider",
+        },
+        providerId: { type: String },
+      },
+    ],
+    rides: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ride" }],
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  }
+  { timestamps: true, discriminatorKey: "role" }
 );
 
-export const User = model<IUser>("User", userSchema);
+const RiderSchema = new Schema<IRider>({
+  isActive: {
+    type: String,
+    enum: Object.values(IsActive),
+    default: IsActive.ACTIVE,
+  },
+});
+
+const DriverSchema = new Schema<IDriver>({
+  isActive: {
+    type: String,
+    enum: Object.values(IsDriverActive),
+    default: IsDriverActive.REQUESTED,
+  },
+  isOnline: { type: Boolean, default: false },
+  vehicle: {
+    type: {
+      type: String,
+      required: true,
+    },
+    number: { type: String, required: true },
+    model: { type: String, required: true },
+  },
+});
+
+// Admin schema
+
+const AdminSchema = new Schema<IAdmin>({
+  isActive: {
+    type: String,
+    enum: Object.values(IsAdminActive),
+    default: IsAdminActive.REQUESTED,
+  },
+});
+// models
+export const User = mongoose.model<IUser>("User", UserSchema);
+export const Admin = User.discriminator<IAdmin>(Role.ADMIN, AdminSchema);
+
+export const Rider = User.discriminator<IRider>(Role.RIDER, RiderSchema);
+export const Driver = User.discriminator<IDriver>(Role.DRIVER, DriverSchema);

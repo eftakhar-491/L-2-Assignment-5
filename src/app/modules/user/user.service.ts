@@ -1,17 +1,20 @@
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
-import { IAuthProvider, IUser, Role } from "./user.interface";
-import { User } from "./user.model";
+import { IAuthProvider, IDriver, IRider, IUser, Role } from "./user.interface";
+import { Driver, Rider } from "./user.model";
 import httpStatus from "http-status-codes";
 import bcryptjs from "bcryptjs";
 import { JwtPayload } from "jsonwebtoken";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { userSearchableFields } from "./user.constant";
+import { sendEmail } from "../../utils/sendEmail";
+import { redisClient } from "../../config/redis.config";
+import { generateOtp } from "../../utils/generateOtp";
+const OTP_EXPIRATION = 2 * 60;
+const createUser = async (payload: Partial<IUser>, Model: any) => {
+  const { email, password, role, ...rest } = payload as Partial<IUser>;
 
-const createUser = async (payload: Partial<IUser>) => {
-  const { email, password, ...rest } = payload as Partial<IUser>;
-
-  const isUserExist = await User.findOne({ email });
+  const isUserExist = await Model.findOne({ email });
 
   if (isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Already Exist");
@@ -27,20 +30,45 @@ const createUser = async (payload: Partial<IUser>) => {
     providerId: email as string,
   };
 
-  const user = await User.create({
+  const user = await Model.create({
     email,
     password: hashedPassword,
     auths: [authProvider],
-
     ...rest,
   });
 
+  if (!user) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "User creation failed"
+    );
+  }
+  const otp = generateOtp();
+
+  const redisKey = `otp:${email}`;
+
+  await redisClient.set(redisKey, otp, {
+    expiration: {
+      type: "EX",
+      value: OTP_EXPIRATION,
+    },
+  });
+
+  await sendEmail({
+    to: email as string,
+    subject: "Your OTP Code",
+    templateName: "otp",
+    templateData: {
+      name: rest.name,
+      otp: otp,
+    },
+  });
   return user;
 };
 
 const updateUser = async (
   userId: string,
-  payload: Partial<IUser>,
+  payload: Partial<IRider> | Partial<IDriver>,
   decodedToken: JwtPayload
 ) => {
   if (
@@ -53,44 +81,62 @@ const updateUser = async (
       throw new AppError(401, "You are not authorized");
     }
   }
+  let newUpdatedUser;
+  if (decodedToken.role === Role.RIDER) {
+    const ifUserExist = await Rider.findById(userId);
 
-  const ifUserExist = await User.findById(userId);
-
-  if (!ifUserExist) {
-    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-  }
-
-  if (
-    ifUserExist.isActive === "BLOCKED" ||
-    ifUserExist.role === Role.SUPER_ADMIN
-  ) {
-    throw new AppError(401, "You are not authorized");
-  }
-
-  if (payload.role) {
-    if (
-      decodedToken.role === Role.RIDER ||
-      decodedToken.role === Role.DRIVER ||
-      decodedToken.role === Role.ADMIN
-    ) {
-      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
+    if (!ifUserExist) {
+      throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
     }
-  }
 
-  if (payload.isActive || payload.isDeleted || payload.isVerified) {
-    if (
-      decodedToken.role === Role.RIDER ||
-      decodedToken.role === Role.DRIVER ||
-      decodedToken.role === Role.ADMIN
-    ) {
-      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
+    if (ifUserExist.isActive === "BLOCK") {
+      throw new AppError(401, "You are not authorized");
     }
-  }
 
-  const newUpdatedUser = await User.findByIdAndUpdate(userId, payload, {
-    new: true,
-    runValidators: true,
-  });
+    if (payload.isActive || payload.isDeleted || payload.isVerified) {
+      if (
+        decodedToken.role === Role.RIDER ||
+        decodedToken.role === Role.DRIVER ||
+        decodedToken.role === Role.ADMIN
+      ) {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
+      }
+    }
+
+    newUpdatedUser = await Rider.findByIdAndUpdate(userId, payload, {
+      new: true,
+      runValidators: true,
+    });
+  }
+  if (decodedToken.role === Role.DRIVER) {
+    const ifUserExist = await Driver.findById(userId);
+
+    if (!ifUserExist) {
+      throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+    }
+
+    if (ifUserExist.isActive === "SUSPENDED") {
+      throw new AppError(
+        401,
+        "You are not authorized because you are suspended"
+      );
+    }
+
+    if (payload.isDeleted || payload.isVerified) {
+      if (
+        decodedToken.role === Role.RIDER ||
+        decodedToken.role === Role.DRIVER ||
+        decodedToken.role === Role.ADMIN
+      ) {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
+      }
+    }
+
+    newUpdatedUser = await Driver.findByIdAndUpdate(userId, payload, {
+      new: true,
+      runValidators: true,
+    });
+  }
 
   return newUpdatedUser;
 };

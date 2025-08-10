@@ -3,6 +3,7 @@ import { redisClient } from "../../config/redis.config";
 import AppError from "../../errorHelpers/AppError";
 import { sendEmail } from "../../utils/sendEmail";
 import { User } from "../user/user.model";
+import Ride from "../ride/ride.model";
 const OTP_EXPIRATION = 2 * 60; // in sec
 
 const generateOtp = (length = 4) => {
@@ -72,8 +73,38 @@ const verifyOTP = async (email: string, otp: string) => {
     redisClient.del([redisKey]),
   ]);
 };
+const verifyRideOTP = async (email: string, otp: string, rideId: string) => {
+  // const user = await User.findOne({ email, isVerified: false })
+  const ride = await Ride.findById(rideId);
+
+  if (!ride) {
+    throw new AppError(404, "Ride data not found");
+  }
+
+  if (ride?.otp) {
+    throw new AppError(401, "You have already assigned an OTP to this ride");
+  }
+
+  const redisKey = `otp:${rideId}`;
+
+  const savedOtp = await redisClient.get(redisKey);
+
+  if (!savedOtp) {
+    throw new AppError(401, "Invalid OTP");
+  }
+
+  if (savedOtp !== otp) {
+    throw new AppError(401, "Invalid OTP");
+  }
+
+  await Promise.all([
+    Ride.updateOne({ _id: rideId }, { isRideOTPVerified: true }),
+    redisClient.del([redisKey]),
+  ]);
+};
 
 export const OTPService = {
   sendOTP,
   verifyOTP,
+  verifyRideOTP,
 };

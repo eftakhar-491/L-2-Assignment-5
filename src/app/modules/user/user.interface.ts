@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 
 export enum Role {
-  SUPER_ADMIN = "SUPER_ADMIN", // aita implement kora hoy nai
   ADMIN = "ADMIN",
   RIDER = "RIDER",
   DRIVER = "DRIVER",
@@ -14,10 +13,24 @@ export interface IAuthProvider {
 
 export enum IsActive {
   ACTIVE = "ACTIVE",
+  BLOCK = "BLOCK",
   INACTIVE = "INACTIVE",
-  BLOCKED = "BLOCKED",
 }
-
+export enum IsDriverActive {
+  REQUESTED = "REQUESTED",
+  APPROVED = "APPROVED",
+  SUSPENDED = "SUSPENDED",
+}
+export enum IsAdminActive {
+  REQUESTED = "REQUESTED",
+  APPROVED = "APPROVED",
+  SUSPENDED = "SUSPENDED",
+}
+export interface IVehicle {
+  type: string;
+  number: string;
+  model: string;
+}
 export interface IUser {
   _id?: Types.ObjectId;
   name: string;
@@ -26,12 +39,24 @@ export interface IUser {
   phone?: string;
   picture?: string;
   address?: string;
-  isDeleted?: string;
-  isActive?: IsActive;
+  isDeleted?: boolean;
   isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];
   rides?: Types.ObjectId[];
-  drivers?: Types.ObjectId[];
+  // drivers?: Types.ObjectId[];
   createdAt?: Date;
+}
+
+export interface IRider extends IUser {
+  isActive?: IsActive;
+}
+
+export interface IDriver extends IUser {
+  isActive?: IsDriverActive;
+  isOnline?: boolean;
+  vehicle: IVehicle;
+}
+export interface IAdmin extends IUser {
+  isActive: IsAdminActive;
 }

@@ -5,7 +5,8 @@ const rideSchema = new Schema<IRide>(
   {
     rider: { type: String, ref: "User", required: true },
     driver: { type: String, ref: "User" },
-    otp: { type: Number, required: true },
+    otp: { type: Number },
+    isRideOTPVerified: { type: Boolean, default: false },
     fee: { type: Number, required: true },
     pickupLocation: {
       address: { type: String, required: true },
