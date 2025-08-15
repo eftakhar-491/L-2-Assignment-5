@@ -4,6 +4,7 @@ import { validateRequest } from "../../middlewares/validateRequest";
 import { UserControllers } from "./user.controller";
 import { createUserZodSchema, updateUserZodSchema } from "./user.validetion";
 import { Role } from "./user.interface";
+import { checkRole } from "../../middlewares/checkRole";
 
 // /api/v1/user/
 const router = Router();
@@ -24,6 +25,7 @@ router.patch(
   "/:id",
   validateRequest(updateUserZodSchema),
   checkAuth(...Object.values(Role)),
+  checkRole(...Object.values(Role)),
   UserControllers.updateUser
 );
 

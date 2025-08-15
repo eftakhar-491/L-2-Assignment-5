@@ -3,8 +3,8 @@ import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
-import { IsActive } from "../modules/user/user.interface";
-import { User } from "../modules/user/user.model";
+import { IsActive, Role } from "../modules/user/user.interface";
+import { Admin, Driver, Rider, User } from "../modules/user/user.model";
 import { verifyToken } from "../utils/jwt";
 
 export const checkAuth =
@@ -21,8 +21,25 @@ export const checkAuth =
         accessToken,
         envVars.JWT_ACCESS_SECRET as string
       ) as JwtPayload;
+      let Model: any;
+      switch (verifiedToken.role) {
+        case Role.ADMIN:
+          // Admin specific logic
+          Model = Admin;
+          break;
+        case Role.DRIVER:
+          // Driver specific logic
+          Model = Driver;
+          break;
+        case Role.RIDER:
+          // Rider specific logic
+          Model = Rider;
+          break;
+        default:
+          throw new AppError(httpStatus.FORBIDDEN, "Invalid user role");
+      }
 
-      const isUserExist = await User.findOne({ email: verifiedToken.email });
+      const isUserExist = await Model.findOne({ email: verifiedToken.email });
       console.log(isUserExist);
       if (!isUserExist) {
         throw new AppError(httpStatus.BAD_REQUEST, "User does not exist");
