@@ -20,6 +20,7 @@ export enum IsDriverActive {
   REQUESTED = "REQUESTED",
   APPROVED = "APPROVED",
   SUSPENDED = "SUSPENDED",
+  INACTIVE = "INACTIVE",
 }
 export enum IsAdminActive {
   REQUESTED = "REQUESTED",

@@ -12,8 +12,6 @@ import { AuthServices } from "./auth.service";
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    // const loginInfo = await AuthServices.credentialsLogin(req.body)
-
     passport.authenticate("local", async (err: any, user: any, info: any) => {
       if (err) {
         return next(new AppError(401, err));
@@ -78,7 +76,7 @@ const getNewAccessToken = catchAsync(
   }
 );
 const logout = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (_: Request, res: Response, next: NextFunction) => {
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: false,
@@ -161,6 +159,7 @@ const forgotPassword = catchAsync(
     });
   }
 );
+
 const googleCallbackController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     let redirectTo = req.query.state ? (req.query.state as string) : "";
@@ -191,5 +190,6 @@ export const AuthControllers = {
   setPassword,
   forgotPassword,
   changePassword,
+
   googleCallbackController,
 };
