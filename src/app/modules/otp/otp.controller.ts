@@ -24,20 +24,8 @@ const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
-const verifyRideOTP = catchAsync(async (req: Request, res: Response) => {
-  const { email, otp } = req.body;
-  const { rideId } = req.params;
-  await OTPService.verifyRideOTP(email, otp, rideId);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "OTP verified successfully",
-    data: null,
-  });
-});
 
 export const OTPController = {
   sendOTP,
   verifyOTP,
-  verifyRideOTP,
 };

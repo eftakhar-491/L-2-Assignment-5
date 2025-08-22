@@ -38,13 +38,15 @@ export const createNewAccessTokenWithRefreshToken = async (
     envVars.JWT_REFRESH_SECRET as string
   ) as JwtPayload;
 
-  const isUserExist = await User.findOne({ email: verifiedRefreshToken.email });
+  const isUserExist = (await User.findOne({
+    email: verifiedRefreshToken.email,
+  })) as any;
 
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User does not exist");
   }
   if (
-    isUserExist.isActive === IsActive.BLOCKED ||
+    isUserExist.isActive === IsActive.BLOCK ||
     isUserExist.isActive === IsActive.INACTIVE
   ) {
     throw new AppError(

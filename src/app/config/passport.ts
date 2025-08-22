@@ -7,7 +7,7 @@ import {
   VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as LocalStrategy } from "passport-local";
-import { IsActive, Role } from "../modules/user/user.interface";
+import { IAuthProvider, IsActive, Role } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 import { envVars } from "./env";
 
@@ -19,7 +19,7 @@ passport.use(
     },
     async (email: string, password: string, done) => {
       try {
-        const isUserExist = await User.findOne({ email });
+        const isUserExist = (await User.findOne({ email })) as any;
 
         if (!isUserExist) {
           return done(null, false, { message: "User does not exist" });
@@ -34,7 +34,7 @@ passport.use(
         }
 
         if (
-          isUserExist.isActive === IsActive.BLOCKED ||
+          isUserExist.isActive === IsActive.BLOCK ||
           isUserExist.isActive === IsActive.INACTIVE
         ) {
           return done(`User is ${isUserExist.isActive}`);
@@ -44,7 +44,8 @@ passport.use(
         }
 
         const isGoogleAuthenticated = isUserExist.auths.some(
-          (providerObjects) => providerObjects.provider == "google"
+          (providerObjects: IAuthProvider) =>
+            providerObjects.provider == "google"
         );
 
         if (isGoogleAuthenticated && !isUserExist.password) {
@@ -96,14 +97,14 @@ passport.use(
           return done(null, false, { mesaage: "No email found" });
         }
 
-        let isUserExist = await User.findOne({ email });
+        let isUserExist = (await User.findOne({ email })) as any;
         if (isUserExist && !isUserExist.isVerified) {
           return done(null, false, { message: "User is not verified" });
         }
 
         if (
           isUserExist &&
-          (isUserExist.isActive === IsActive.BLOCKED ||
+          (isUserExist.isActive === IsActive.BLOCK ||
             isUserExist.isActive === IsActive.INACTIVE)
         ) {
           return done(null, false, {
