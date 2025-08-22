@@ -13,13 +13,13 @@ import { Role } from "../user/user.interface";
 const route = Router();
 route.post(
   "/price-and-details",
-  checkAuth(Role.RIDER),
+  checkAuth(Role.RIDER, Role.ADMIN),
   rideController.getPriceAndDetails
 );
 
 route.post(
   "/request-ride",
-  checkAuth(Role.RIDER),
+  checkAuth(Role.RIDER, Role.ADMIN),
   validateRequest(createRideZodSchema),
   rideController.createRide
 );
@@ -35,31 +35,23 @@ route.patch(
   validateRequest(rideCancelZodSchema),
   rideController.rideCancel
 );
-
+// For picked up
 route.patch(
-  "/ride-pickup/:rideId",
-  checkAuth(Role.DRIVER, Role.ADMIN),
-  validateRequest(createRideZodSchema)
-  // rideController.ridePickup
-);
-route.patch(
-  "/ride-otp-send/:rideId",
+  "/ride-picked-up-otp-send/:rideId",
   checkAuth(Role.DRIVER, Role.ADMIN, Role.RIDER),
-
   rideController.rideOtpSend
 );
 route.patch(
   "/ride-otp-verify/:rideId",
   checkAuth(Role.DRIVER, Role.ADMIN, Role.RIDER),
-
   rideController.rideOtpVerify
 );
 
-route.post(
-  "/ride-complete",
+route.patch(
+  "/ride-complete/:rideId",
   checkAuth(Role.DRIVER, Role.RIDER),
-  validateRequest(createRideZodSchema),
-  rideController.createRide
+
+  rideController.rideComplete
 );
 
 route.put(

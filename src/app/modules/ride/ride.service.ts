@@ -361,6 +361,32 @@ const rideOtpVerify = async (otp: string, rideId: string) => {
     status: RideStatus.IN_TRANSIT,
   };
 };
+
+const rideComplete = async (rideId: string, status: RideStatus.COMPLETED) => {
+  if (!rideId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  const ride = await Ride.findById(rideId);
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+  if (ride.status !== RideStatus.IN_TRANSIT) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Ride can only be completed from IN_TRANSIT status"
+    );
+  }
+  if (status !== RideStatus.COMPLETED) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Ride can only be completed with COMPLETED status"
+    );
+  }
+  await Ride.updateOne({ _id: rideId }, { status });
+  const updatedRide = await Ride.findById(rideId);
+  return updatedRide;
+};
+
 export const rideService = {
   createRide,
   updateRide,
@@ -370,4 +396,5 @@ export const rideService = {
   // ridePickup,
   rideOtpSend,
   rideOtpVerify,
+  rideComplete,
 };

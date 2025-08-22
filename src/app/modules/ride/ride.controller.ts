@@ -104,6 +104,21 @@ const rideOtpVerify = catchAsync(
     });
   }
 );
+const rideComplete = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { rideId } = req.params;
+    const { status } = req.body;
+
+    const updatedRide = await rideService.rideComplete(rideId, status);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Ride status updated successfully",
+      data: updatedRide,
+    });
+  }
+);
 
 export const rideController = {
   createRide,
@@ -113,4 +128,5 @@ export const rideController = {
   rideCancel,
   rideOtpSend,
   rideOtpVerify,
+  rideComplete,
 };
