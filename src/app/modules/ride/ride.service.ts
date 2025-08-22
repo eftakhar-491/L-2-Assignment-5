@@ -5,7 +5,10 @@ import { IRide, RideStatus } from "./ride.interface";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import Ride from "./ride.model";
-
+import { generateOtp } from "../../utils/generateOtp";
+import { redisClient } from "../../config/redis.config";
+import { sendEmail } from "../../utils/sendEmail";
+const OTP_EXPIRATION = 2 * 60;
 const createRide = async (payload: Partial<IRide>, req: Request) => {
   const { pickupLocation, dropoffLocation } = payload as Partial<IRide>;
 
@@ -52,6 +55,7 @@ const createRide = async (payload: Partial<IRide>, req: Request) => {
       longitude: null,
       boundingbox: null,
     },
+    ...payload,
   });
 
   return ride;
@@ -167,7 +171,203 @@ const updateRide = async (
   return ride;
 };
 
+const getPriceAndDetails = async (payload: Partial<IRide>) => {
+  if (!payload) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  // map lat,lng and distance etc
+  const { pickupLocation, dropoffLocation } = payload as Partial<IRide>;
+
+  return {
+    fee: Math.floor(Math.random() * 100) + 1, // Random fee for demonstration
+    estimatedTime: Math.floor(Math.random() * 60) + 1, // Random estimated time in minutes
+    pickupLocation,
+    dropoffLocation,
+  };
+};
+
+// ride accept
+
+const rideAccept = async (rideId: string, status: RideStatus) => {
+  if (!rideId || !status) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  const ride = await Ride.findById(rideId);
+
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+  if (ride.status === status) {
+    return "Ride status has changed";
+  }
+  if (ride.status !== RideStatus.ACCEPTED) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Ride can only be accepted from REQUESTED status"
+    );
+  }
+  await Ride.updateOne({ _id: rideId }, { status });
+  const updatedRide = await Ride.findById(rideId);
+  return updatedRide;
+};
+
+const rideCancel = async (rideId: string, status: RideStatus) => {
+  if (!rideId || !status) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  const ride = await Ride.findById(rideId);
+
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+  if (ride.status === status) {
+    return ride;
+  }
+
+  if (
+    ride.status === RideStatus.IN_TRANSIT ||
+    ride.status === RideStatus.COMPLETED
+  ) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Ride cannot be cancelled once it is in transit or completed"
+    );
+  }
+
+  await Ride.updateOne({ _id: rideId }, { status });
+
+  const updatedRide = await Ride.findById(rideId);
+
+  return updatedRide;
+};
+
+// const ridePickup = async (rideId: string, status: RideStatus) => {
+//   if (!rideId || !status) {
+//     throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+//   }
+//   const ride = await Ride.findById(rideId);
+//   if (!ride) {
+//     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+//   }
+//   const rider = await User.findById(ride.rider);
+//   if (!rider) {
+//     throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
+//   }
+//   const email = rider.email;
+//   if (ride.status === status) {
+//     return ride;
+//   }
+//   if (!RideStatus.CANCELLED) {
+//     throw new AppError(
+//       httpStatus.FORBIDDEN,
+//       "Ride can only be cancelled from REQUESTED status"
+//     );
+//   }
+//   if (!RideStatus.PICKED_UP) {
+//     throw new AppError(httpStatus.FORBIDDEN, "status can be IN_TRANSIT");
+//   }
+
+//   await Ride.updateOne({ _id: rideId }, { status });
+//   const updatedRide = await Ride.findById(rideId);
+
+//   return updatedRide;
+// };
+
+const rideOtpSend = async (rideId: string, status: RideStatus) => {
+  if (!rideId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  const ride = await Ride.findById(rideId);
+
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+  const rider = await User.findById(ride.rider);
+
+  if (!rider) {
+    throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
+  }
+  const email = rider.email;
+
+  if (ride.isRideOTPVerified) {
+    return ride;
+  }
+  if (!RideStatus.PICKED_UP) {
+    throw new AppError(httpStatus.FORBIDDEN, "Status can be PICKED_UP");
+  }
+
+  const otp = generateOtp();
+
+  const redisKey = `otp:${email}`;
+
+  await redisClient.set(redisKey, otp, {
+    expiration: {
+      type: "EX",
+      value: OTP_EXPIRATION,
+    },
+  });
+
+  await sendEmail({
+    to: email,
+    subject: "Your OTP Code",
+    templateName: "otp",
+    templateData: {
+      name: rider.name,
+      otp: otp,
+    },
+  });
+  if (status) {
+    await Ride.updateOne({ _id: rideId }, { status });
+  }
+
+  const updatedRide = await Ride.findById(rideId);
+
+  return updatedRide;
+};
+const rideOtpVerify = async (otp: string, rideId: string) => {
+  // const user = await User.findOne({ email, isVerified: false })
+  const ride = await Ride.findById(rideId);
+
+  if (!ride) {
+    throw new AppError(404, "Ride data not found");
+  }
+  const rider = await User.findById(ride.rider);
+  if (!rider) {
+    throw new AppError(404, "Rider not found");
+  }
+
+  const email = rider.email;
+  const redisKey = `otp:${email}`;
+
+  const savedOtp = await redisClient.get(redisKey);
+
+  if (!savedOtp) {
+    throw new AppError(401, "Invalid OTP");
+  }
+
+  if (savedOtp !== otp) {
+    throw new AppError(401, "Invalid OTP provided");
+  }
+
+  await Promise.all([
+    Ride.updateOne(
+      { _id: rideId },
+      { isRideOTPVerified: true, otp, status: RideStatus.IN_TRANSIT }
+    ),
+    redisClient.del([redisKey]),
+  ]);
+  return {
+    ...ride,
+    status: RideStatus.IN_TRANSIT,
+  };
+};
 export const rideService = {
   createRide,
   updateRide,
+  getPriceAndDetails,
+  rideAccept,
+  rideCancel,
+  // ridePickup,
+  rideOtpSend,
+  rideOtpVerify,
 };

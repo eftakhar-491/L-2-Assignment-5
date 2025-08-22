@@ -59,3 +59,14 @@ export const updateRideZodSchema = z.object({
       "Ride status must be one of the {REQUESTED, ACCEPTED, PICKED_UP , IN_TRANSIT , COMPLETED} values.",
   }),
 });
+
+export const rideAcceptZodSchema = z.object({
+  status: z.enum(["ACCEPTED"] as [string], {
+    message: "Ride status must be one of the { ACCEPTED } values.",
+  }),
+});
+export const rideCancelZodSchema = z.object({
+  status: z.enum(["CANCELLED"] as [string], {
+    message: "Ride status must be one of the { CANCELLED } values.",
+  }),
+});

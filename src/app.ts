@@ -7,6 +7,8 @@ import cors from "cors";
 import { envVars } from "./app/config/env";
 import expressSession from "express-session";
 import "./app/config/passport"; // Ensure passport is configured
+import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
+import notFound from "./app/middlewares/notFound";
 
 app.use(express.json());
 app.use(
@@ -19,7 +21,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
-app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -30,3 +31,6 @@ app.use(
 );
 
 app.use("/api/v1", router);
+
+app.use(globalErrorHandler);
+app.use(notFound);
