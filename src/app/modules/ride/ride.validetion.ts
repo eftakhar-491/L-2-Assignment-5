@@ -65,6 +65,7 @@ export const rideAcceptZodSchema = z.object({
     message: "Ride status must be one of the { ACCEPTED } values.",
   }),
 });
+
 export const rideCancelZodSchema = z.object({
   status: z.enum(["CANCELLED"] as [string], {
     message: "Ride status must be one of the { CANCELLED } values.",

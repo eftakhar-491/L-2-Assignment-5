@@ -188,8 +188,12 @@ const getPriceAndDetails = async (payload: Partial<IRide>) => {
 
 // ride accept
 
-const rideAccept = async (rideId: string, status: RideStatus) => {
-  if (!rideId || !status) {
+const rideAccept = async (
+  rideId: string,
+  status: RideStatus,
+  driverId: string
+) => {
+  if (!rideId || !status || !driverId) {
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
   }
   const ride = await Ride.findById(rideId);
@@ -198,15 +202,15 @@ const rideAccept = async (rideId: string, status: RideStatus) => {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
   if (ride.status === status) {
-    return "Ride status has changed";
+    return ride;
   }
-  if (ride.status !== RideStatus.ACCEPTED) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Ride can only be accepted from REQUESTED status"
-    );
-  }
-  await Ride.updateOne({ _id: rideId }, { status });
+  // if (status !== RideStatus.ACCEPTED) {
+  //   throw new AppError(
+  //     httpStatus.FORBIDDEN,
+  //     "Ride can only be accepted from REQUESTED status"
+  //   );
+  // }
+  await Ride.updateOne({ _id: rideId }, { status, driver: driverId });
   const updatedRide = await Ride.findById(rideId);
   return updatedRide;
 };
@@ -224,15 +228,15 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
     return ride;
   }
 
-  if (
-    ride.status === RideStatus.IN_TRANSIT ||
-    ride.status === RideStatus.COMPLETED
-  ) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Ride cannot be cancelled once it is in transit or completed"
-    );
-  }
+  // if (
+  //   ride.status === RideStatus.IN_TRANSIT ||
+  //   ride.status === RideStatus.COMPLETED
+  // ) {
+  //   throw new AppError(
+  //     httpStatus.FORBIDDEN,
+  //     "Ride cannot be cancelled once it is in transit or completed"
+  //   );
+  // }
 
   await Ride.updateOne({ _id: rideId }, { status });
 
@@ -291,9 +295,6 @@ const rideOtpSend = async (rideId: string, status: RideStatus) => {
 
   if (ride.isRideOTPVerified) {
     return ride;
-  }
-  if (!RideStatus.PICKED_UP) {
-    throw new AppError(httpStatus.FORBIDDEN, "Status can be PICKED_UP");
   }
 
   const otp = generateOtp();
@@ -370,18 +371,7 @@ const rideComplete = async (rideId: string, status: RideStatus.COMPLETED) => {
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
-  if (ride.status !== RideStatus.IN_TRANSIT) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Ride can only be completed from IN_TRANSIT status"
-    );
-  }
-  if (status !== RideStatus.COMPLETED) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Ride can only be completed with COMPLETED status"
-    );
-  }
+
   await Ride.updateOne({ _id: rideId }, { status });
   const updatedRide = await Ride.findById(rideId);
   return updatedRide;

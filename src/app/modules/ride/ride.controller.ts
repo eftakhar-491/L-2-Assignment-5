@@ -47,8 +47,9 @@ const rideAccept = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { rideId } = req.params;
     const { status } = req.body;
+    const { userId } = req.user as JwtPayload;
 
-    const updatedRide = await rideService.rideAccept(rideId, status);
+    const updatedRide = await rideService.rideAccept(rideId, status, userId);
 
     sendResponse(res, {
       success: true,

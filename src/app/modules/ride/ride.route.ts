@@ -9,6 +9,8 @@ import {
   updateRideZodSchema,
 } from "./ride.validetion";
 import { Role } from "../user/user.interface";
+import { checkStatusStep } from "../../middlewares/checkStatusStep";
+import { RideStatus } from "./ride.interface";
 
 const route = Router();
 route.post(
@@ -27,38 +29,35 @@ route.patch(
   "/ride-accept/:rideId",
   checkAuth(Role.DRIVER, Role.ADMIN),
   validateRequest(rideAcceptZodSchema),
+  checkStatusStep(RideStatus.ACCEPTED),
   rideController.rideAccept
 );
 route.patch(
   "/ride-cancel/:rideId",
   checkAuth(...Object.values(Role)),
   validateRequest(rideCancelZodSchema),
+  checkStatusStep(RideStatus.CANCELLED),
   rideController.rideCancel
 );
 // For picked up
 route.patch(
   "/ride-picked-up-otp-send/:rideId",
-  checkAuth(Role.DRIVER, Role.ADMIN, Role.RIDER),
+  checkAuth(Role.DRIVER, Role.ADMIN),
+  checkStatusStep(RideStatus.PICKED_UP),
   rideController.rideOtpSend
 );
 route.patch(
   "/ride-otp-verify/:rideId",
-  checkAuth(Role.DRIVER, Role.ADMIN, Role.RIDER),
+  checkAuth(Role.ADMIN, Role.RIDER),
+
   rideController.rideOtpVerify
 );
-
+// if successfully paid
 route.patch(
   "/ride-complete/:rideId",
-  checkAuth(Role.DRIVER, Role.RIDER),
-
+  checkAuth(Role.DRIVER, Role.ADMIN),
+  checkStatusStep(RideStatus.COMPLETED),
   rideController.rideComplete
-);
-
-route.put(
-  "/update-ride/:id",
-  checkAuth(Role.DRIVER, Role.RIDER),
-  validateRequest(updateRideZodSchema),
-  rideController.updateRide
 );
 
 export const RideRoutes = route;
