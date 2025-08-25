@@ -120,14 +120,55 @@ const rideComplete = catchAsync(
     });
   }
 );
+const getRideHistory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { rideId } = req.params;
 
+    const rideHistory = await rideService.getRideHistory(rideId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Ride history retrieved successfully",
+      data: rideHistory,
+    });
+  }
+);
+
+const getAllRides = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const allRides = await rideService.getAllRides();
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All rides retrieved successfully",
+      data: allRides,
+    });
+  }
+);
+const getRiderPastRides = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const riderId = (req.user as JwtPayload).userId;
+    const allRides = await rideService.getRiderPastRides(riderId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All rides retrieved successfully",
+      data: allRides,
+    });
+  }
+);
 export const rideController = {
   createRide,
   updateRide,
   getPriceAndDetails,
   rideAccept,
+  getRideHistory,
   rideCancel,
   rideOtpSend,
   rideOtpVerify,
   rideComplete,
+  getAllRides,
+  getRiderPastRides,
 };

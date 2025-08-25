@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IRide, RideStatus } from "./ride.interface";
+import { IRide, IRideHistory, RideStatus } from "./ride.interface";
 
 const rideSchema = new Schema<IRide>(
   {
@@ -31,7 +31,37 @@ const rideSchema = new Schema<IRide>(
     versionKey: false,
   }
 );
+const rideHistorySchema = new Schema<IRideHistory>(
+  {
+    rideId: { type: String, ref: "Ride", required: true },
+    status: { type: String, enum: Object.values(RideStatus) },
+    updatedTimestamp: { type: Date, required: true },
+    fee: { type: Number },
+    otp: { type: Number },
+    isRideOTPVerified: { type: Boolean },
+    pickupLocation: {
+      address: { type: String },
+      latitude: { type: String },
+      longitude: { type: String },
+      boundingbox: { type: [String] },
+    },
+    dropoffLocation: {
+      address: { type: String },
+      latitude: { type: String },
+      longitude: { type: String },
+      boundingbox: { type: [String] },
+    },
+  },
+  {
+    timestamps: false,
+    versionKey: false,
+  }
+);
 
+export const RideHistory = model<IRideHistory>(
+  "RideHistory",
+  rideHistorySchema
+);
 const Ride = model<IRide>("Ride", rideSchema);
 
 export default Ride;

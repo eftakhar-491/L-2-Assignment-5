@@ -72,6 +72,7 @@ const updateUser = catchAsync(
     const payload = req.body;
 
     const userRole = (req.user as JwtPayload).role as string;
+
     switch (userRole) {
       case Role.RIDER:
         // Handle rider specific logic

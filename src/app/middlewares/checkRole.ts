@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
-import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
 import {
   IsActive,
@@ -9,15 +8,19 @@ import {
   IsDriverActive,
   Role,
 } from "../modules/user/user.interface";
-import { Admin, Driver, Rider, User } from "../modules/user/user.model";
-import { verifyToken } from "../utils/jwt";
+import { Admin, Driver, Rider } from "../modules/user/user.model";
 
 export const checkRole =
   (...authRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
-    const role = (req.user as { role: Role }).role;
+    const role = (req.user as JwtPayload).role;
+    const userId = (req.user as JwtPayload).userId;
+
     if (!role) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "User role not found");
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        "User role or user not found"
+      );
     }
     try {
       if (!authRoles.includes(role)) {
@@ -29,11 +32,26 @@ export const checkRole =
 
       // If role is DRIVER, restrict certain actions
       if (role === Role.DRIVER) {
+        const user = await Driver.findById(userId);
         if (
-          req.body.hasOwnProperty("role") ||
-          req.body.isDriverActive === IsDriverActive.SUSPENDED ||
-          req.body.isDriverActive === IsDriverActive.APPROVED ||
-          (req.body.role && req.body.role !== Role.DRIVER)
+          !user ||
+          user.isActive === IsDriverActive.REQUESTED ||
+          user.isActive === IsDriverActive.SUSPENDED
+        ) {
+          throw new AppError(
+            httpStatus.FORBIDDEN,
+            `Drivers {${user?.isActive}} are not allowed to perform this action`
+          );
+        }
+        if (
+          req.body?.isActive === IsDriverActive.SUSPENDED ||
+          req.body?.isActive === IsDriverActive.APPROVED ||
+          req.body?.password ||
+          req.body?.email ||
+          req.body?.isDeleted ||
+          req.body?.isVerified ||
+          req.body?.isOnline ||
+          (req.body?.role && req.body?.role !== Role.DRIVER)
         ) {
           throw new AppError(
             httpStatus.FORBIDDEN,
@@ -44,10 +62,18 @@ export const checkRole =
 
       // If role is RIDER, restrict certain actions
       if (role === Role.RIDER) {
+        const user = await Rider.findById(userId);
+        if (!user || user.isActive === IsActive.BLOCK) {
+          throw new AppError(
+            httpStatus.FORBIDDEN,
+            `Riders {${user?.isActive}} are not allowed to perform this action`
+          );
+        }
         if (
-          req.body.hasOwnProperty("role") ||
           req.body.isActive === IsActive.BLOCK ||
-          req.body.isActive === IsActive.INACTIVE ||
+          req.body?.password ||
+          req.body?.email ||
+          req.body?.isDeleted ||
           (req.body.role && req.body.role !== Role.RIDER)
         ) {
           throw new AppError(
@@ -58,11 +84,25 @@ export const checkRole =
       }
       // Admin can access all
       if (role === Role.ADMIN) {
+        const user = await Admin.findById(userId);
         if (
-          req.body.hasOwnProperty("role") ||
+          !user ||
+          user.isActive === IsAdminActive.REQUESTED ||
+          user.isActive === IsAdminActive.SUSPENDED
+        ) {
+          throw new AppError(
+            httpStatus.FORBIDDEN,
+            `Admins {${user?.isActive}} are not allowed to perform this action`
+          );
+        }
+        if (
           req.body.isActive === IsAdminActive.REQUESTED ||
           req.body.isActive === IsAdminActive.SUSPENDED ||
-          !req.body.role
+          req.body?.password ||
+          req.body?.email ||
+          req.body?.isDeleted ||
+          req.body?.isVerified ||
+          (req.body.role && req.body.role !== Role.ADMIN)
         ) {
           throw new AppError(
             httpStatus.FORBIDDEN,

@@ -96,20 +96,6 @@ const updateUser = async (
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
 
-  if (ifUserExist.isActive === "BLOCK") {
-    throw new AppError(401, "You are not authorized");
-  }
-
-  if (payload.isActive || payload.isDeleted || payload.isVerified) {
-    if (
-      decodedToken.role === Role.RIDER ||
-      decodedToken.role === Role.DRIVER ||
-      decodedToken.role === Role.ADMIN
-    ) {
-      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
-    }
-  }
-
   const newUpdatedUser = await Model.findByIdAndUpdate(userId, payload, {
     new: true,
     runValidators: true,

@@ -23,7 +23,6 @@ router.get("/:id", checkAuth(Role.ADMIN), UserControllers.getSingleUser);
 
 router.patch(
   "/:id",
-  validateRequest(updateUserZodSchema),
   checkAuth(...Object.values(Role)),
   checkRole(...Object.values(Role)),
   UserControllers.updateUser

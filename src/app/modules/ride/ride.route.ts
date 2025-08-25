@@ -11,6 +11,7 @@ import {
 import { Role } from "../user/user.interface";
 import { checkStatusStep } from "../../middlewares/checkStatusStep";
 import { RideStatus } from "./ride.interface";
+import { checkRole } from "../../middlewares/checkRole";
 
 const route = Router();
 route.post(
@@ -35,6 +36,7 @@ route.patch(
 route.patch(
   "/ride-cancel/:rideId",
   checkAuth(...Object.values(Role)),
+
   validateRequest(rideCancelZodSchema),
   checkStatusStep(RideStatus.CANCELLED),
   rideController.rideCancel
@@ -58,6 +60,21 @@ route.patch(
   checkAuth(Role.DRIVER, Role.ADMIN),
   checkStatusStep(RideStatus.COMPLETED),
   rideController.rideComplete
+);
+// get ride history
+route.get(
+  "/ride-history/:rideId",
+  checkAuth(Role.RIDER, Role.DRIVER, Role.ADMIN),
+
+  rideController.getRideHistory
+);
+
+route.get("/all-rides", checkAuth(Role.ADMIN), rideController.getAllRides);
+
+route.get(
+  "/rider-past-ride",
+  checkAuth(Role.RIDER),
+  rideController.getRiderPastRides
 );
 
 export const RideRoutes = route;

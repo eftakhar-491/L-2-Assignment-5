@@ -33,7 +33,6 @@ const UserSchema = new Schema<IUser>(
         providerId: { type: String },
       },
     ],
-    rides: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ride" }],
   },
   { timestamps: true, discriminatorKey: "role" }
 );
@@ -53,6 +52,7 @@ const DriverSchema = new Schema<IDriver>({
     default: IsDriverActive.REQUESTED,
   },
   isOnline: { type: Boolean, default: false },
+  isRideAccepted: { type: Boolean, default: false },
   vehicle: {
     type: {
       type: String,

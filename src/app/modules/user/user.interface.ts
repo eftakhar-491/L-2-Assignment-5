@@ -44,8 +44,6 @@ export interface IUser {
   isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];
-  rides?: Types.ObjectId[];
-  // drivers?: Types.ObjectId[];
   createdAt?: Date;
 }
 
@@ -57,6 +55,7 @@ export interface IDriver extends IUser {
   isActive?: IsDriverActive;
   isOnline?: boolean;
   vehicle: IVehicle;
+  isRideAccepted?: boolean;
 }
 export interface IAdmin extends IUser {
   isActive: IsAdminActive;

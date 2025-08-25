@@ -3,7 +3,12 @@ import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../config/env";
 import AppError from "../errorHelpers/AppError";
-import { IsActive, Role } from "../modules/user/user.interface";
+import {
+  IsActive,
+  IsAdminActive,
+  IsDriverActive,
+  Role,
+} from "../modules/user/user.interface";
 import { Admin, Driver, Rider, User } from "../modules/user/user.model";
 import { verifyToken } from "../utils/jwt";
 
@@ -49,7 +54,12 @@ export const checkAuth =
       }
       if (
         isUserExist.isActive === IsActive.BLOCK ||
-        isUserExist.isActive === IsActive.INACTIVE
+        isUserExist.isActive === IsActive.INACTIVE ||
+        isUserExist.isActive === IsDriverActive.SUSPENDED ||
+        isUserExist.isActive === IsDriverActive.REQUESTED ||
+        isUserExist.isActive === IsDriverActive.INACTIVE ||
+        isUserExist.isActive === IsAdminActive.SUSPENDED ||
+        isUserExist.isActive === IsAdminActive.REQUESTED
       ) {
         throw new AppError(
           httpStatus.BAD_REQUEST,

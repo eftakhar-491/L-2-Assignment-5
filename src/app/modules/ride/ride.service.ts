@@ -1,14 +1,16 @@
 import { NextFunction, Request } from "express";
 import AppError from "../../errorHelpers/AppError";
-import { User } from "../user/user.model";
-import { IRide, RideStatus } from "./ride.interface";
+import { Driver, User } from "../user/user.model";
+import { IPickupAndDropoffLocation, IRide, RideStatus } from "./ride.interface";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
-import Ride from "./ride.model";
+import Ride, { RideHistory } from "./ride.model";
 import { generateOtp } from "../../utils/generateOtp";
 import { redisClient } from "../../config/redis.config";
 import { sendEmail } from "../../utils/sendEmail";
+import getNearestLocations from "../../helpers/handleNearestRide";
 const OTP_EXPIRATION = 2 * 60;
+
 const createRide = async (payload: Partial<IRide>, req: Request) => {
   const { pickupLocation, dropoffLocation } = payload as Partial<IRide>;
 
@@ -197,10 +199,17 @@ const rideAccept = async (
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
   }
   const ride = await Ride.findById(rideId);
-
-  if (!ride) {
-    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  const driver = await Driver.findById(driverId);
+  if (!ride || !driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride or Driver not found");
   }
+  if (!driver.isOnline) {
+    return "Driver is not online";
+  }
+  if (driver.isRideAccepted) {
+    return "you already accepted a ride";
+  }
+
   if (ride.status === status) {
     return ride;
   }
@@ -211,6 +220,12 @@ const rideAccept = async (
   //   );
   // }
   await Ride.updateOne({ _id: rideId }, { status, driver: driverId });
+  await Driver.updateOne({ _id: driverId }, { isRideAccepted: true });
+  await RideHistory.create({
+    rideId,
+    status,
+    updatedTimestamp: new Date(),
+  });
   const updatedRide = await Ride.findById(rideId);
   return updatedRide;
 };
@@ -239,43 +254,16 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
   // }
 
   await Ride.updateOne({ _id: rideId }, { status });
+  await RideHistory.create({
+    rideId,
+    status,
+    updatedTimestamp: new Date(),
+  });
 
   const updatedRide = await Ride.findById(rideId);
 
   return updatedRide;
 };
-
-// const ridePickup = async (rideId: string, status: RideStatus) => {
-//   if (!rideId || !status) {
-//     throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
-//   }
-//   const ride = await Ride.findById(rideId);
-//   if (!ride) {
-//     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
-//   }
-//   const rider = await User.findById(ride.rider);
-//   if (!rider) {
-//     throw new AppError(httpStatus.NOT_FOUND, "Rider not found");
-//   }
-//   const email = rider.email;
-//   if (ride.status === status) {
-//     return ride;
-//   }
-//   if (!RideStatus.CANCELLED) {
-//     throw new AppError(
-//       httpStatus.FORBIDDEN,
-//       "Ride can only be cancelled from REQUESTED status"
-//     );
-//   }
-//   if (!RideStatus.PICKED_UP) {
-//     throw new AppError(httpStatus.FORBIDDEN, "status can be IN_TRANSIT");
-//   }
-
-//   await Ride.updateOne({ _id: rideId }, { status });
-//   const updatedRide = await Ride.findById(rideId);
-
-//   return updatedRide;
-// };
 
 const rideOtpSend = async (rideId: string, status: RideStatus) => {
   if (!rideId) {
@@ -319,6 +307,11 @@ const rideOtpSend = async (rideId: string, status: RideStatus) => {
   });
   if (status) {
     await Ride.updateOne({ _id: rideId }, { status });
+    await RideHistory.create({
+      rideId,
+      status,
+      updatedTimestamp: new Date(),
+    });
   }
 
   const updatedRide = await Ride.findById(rideId);
@@ -355,6 +348,13 @@ const rideOtpVerify = async (otp: string, rideId: string) => {
       { _id: rideId },
       { isRideOTPVerified: true, otp, status: RideStatus.IN_TRANSIT }
     ),
+    RideHistory.create({
+      rideId,
+      status: RideStatus.IN_TRANSIT,
+      updatedTimestamp: new Date(),
+      otp: Number(otp),
+      isRideOTPVerified: true,
+    }),
     redisClient.del([redisKey]),
   ]);
   return {
@@ -373,18 +373,46 @@ const rideComplete = async (rideId: string, status: RideStatus.COMPLETED) => {
   }
 
   await Ride.updateOne({ _id: rideId }, { status });
+  await RideHistory.create({
+    rideId,
+    status,
+    updatedTimestamp: new Date(),
+  });
   const updatedRide = await Ride.findById(rideId);
   return updatedRide;
 };
+const getRideHistory = async (rideId: string) => {
+  if (!rideId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  const rideHistory = await RideHistory.find({ rideId }).sort({
+    updatedTimestamp: -1,
+  });
+  if (!rideHistory) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride history not found");
+  }
+  return rideHistory;
+};
 
+const getAllRides = async () => {
+  const rides = await Ride.find().sort({ createdAt: -1 });
+  return rides;
+};
+const getRiderPastRides = async (riderId: string) => {
+  const rides = await Ride.find({ rider: riderId }).sort({ createdAt: -1 });
+  return rides;
+};
 export const rideService = {
   createRide,
   updateRide,
   getPriceAndDetails,
   rideAccept,
   rideCancel,
+  getRideHistory,
   // ridePickup,
   rideOtpSend,
   rideOtpVerify,
   rideComplete,
+  getAllRides,
+  getRiderPastRides,
 };

@@ -26,3 +26,15 @@ export interface IRide {
   fee: number;
   isRideOTPVerified?: boolean;
 }
+
+export interface IRideHistory {
+  _id?: string;
+  rideId: string;
+  status: RideStatus;
+  updatedTimestamp: Date;
+  fee?: number;
+  otp?: number;
+  isRideOTPVerified?: boolean;
+  pickupLocation: IPickupAndDropoffLocation;
+  dropoffLocation: IPickupAndDropoffLocation;
+}

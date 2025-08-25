@@ -71,3 +71,35 @@ export const rideCancelZodSchema = z.object({
     message: "Ride status must be one of the { CANCELLED } values.",
   }),
 });
+
+export const rideHistoryZodSchema = z.object({
+  rideId: z.string({ message: "Ride ID must be a string" }),
+  status: z.enum(Object.values(RideStatus) as [string], {
+    message:
+      "Ride status must be one of the {REQUESTED, ACCEPTED, PICKED_UP , IN_TRANSIT , COMPLETED} values.",
+  }),
+  updatedTimestamp: z.date({ message: "Updated timestamp must be a date" }),
+  fee: z.number({ message: "Fee must be a number" }).optional(),
+  otp: z
+    .number({ message: "OTP must be a number" })
+    .min(1000, { message: "OTP must be at least 4 digits." })
+    .max(9999, { message: "OTP cannot exceed 4 digits." })
+    .optional(),
+  isRideOTPVerified: z
+    .boolean({
+      message: "isRideOTPVerified must be a boolean",
+    })
+    .optional(),
+  pickupLocation: z.object({
+    address: z.string({ message: "Pickup address must be a string" }),
+    latitude: z.string().optional(),
+    longitude: z.string().optional(),
+    boundingbox: z.array(z.string()).optional(),
+  }),
+  dropoffLocation: z.object({
+    address: z.string({ message: "Dropoff address must be a string" }),
+    latitude: z.string().optional(),
+    longitude: z.string().optional(),
+    boundingbox: z.array(z.string()).optional(),
+  }),
+});
