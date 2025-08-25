@@ -54,10 +54,8 @@ export const checkAuth =
       }
       if (
         isUserExist.isActive === IsActive.BLOCK ||
-        isUserExist.isActive === IsActive.INACTIVE ||
         isUserExist.isActive === IsDriverActive.SUSPENDED ||
         isUserExist.isActive === IsDriverActive.REQUESTED ||
-        isUserExist.isActive === IsDriverActive.INACTIVE ||
         isUserExist.isActive === IsAdminActive.SUSPENDED ||
         isUserExist.isActive === IsAdminActive.REQUESTED
       ) {
