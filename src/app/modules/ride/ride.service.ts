@@ -278,7 +278,7 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
       );
       await RideHistory.create({
         rideId,
-        status,
+        status: RideStatus.REQUESTED,
         isRideAccepted: false,
         driver: "",
         updatedTimestamp: new Date(),

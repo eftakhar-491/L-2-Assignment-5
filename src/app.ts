@@ -9,6 +9,7 @@ import expressSession from "express-session";
 import "./app/config/passport"; // Ensure passport is configured
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
+import { success } from "zod";
 
 app.use(express.json());
 app.use(
@@ -30,7 +31,10 @@ app.use(
   })
 );
 app.get("/", (req, res) => {
-  res.send("Welcome to the APP, this is a ride sharing service");
+  res.send({
+    message: "Welcome to the APP, this is a ride sharing service",
+    success: true,
+  });
 });
 app.use("/api/v1", router);
 
