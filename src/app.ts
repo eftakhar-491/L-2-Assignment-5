@@ -29,7 +29,9 @@ app.use(
     credentials: true,
   })
 );
-
+app.get("/", (req, res) => {
+  res.send("Welcome to the APP, this is a ride sharing service");
+});
 app.use("/api/v1", router);
 
 app.use(globalErrorHandler);

@@ -38,7 +38,7 @@ const getDriverNearestRides = async (payload: IPickupAndDropoffLocation) => {
   if (!latitude || !longitude) {
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid location data");
   }
-  const driverRides = await Ride.find().lean();
+  const driverRides = await Ride.find({ isRideAccepted: false }).lean();
   // const nearestLocations = getNearestLocations(payload, driverRides);
 
   if (!driverRides) {
@@ -47,7 +47,6 @@ const getDriverNearestRides = async (payload: IPickupAndDropoffLocation) => {
   return driverRides;
 };
 const getDriverMyRides = async (driverId: string) => {
-  console.log(driverId);
   const driverRides = await Ride.find({ driver: driverId }).lean();
   if (!driverRides) {
     throw new AppError(httpStatus.NOT_FOUND, "No rides found for this driver");

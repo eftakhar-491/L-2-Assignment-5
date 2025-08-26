@@ -8,6 +8,7 @@ const rideSchema = new Schema<IRide>(
     otp: { type: Number },
     isRideOTPVerified: { type: Boolean, default: false },
     fee: { type: Number, required: true },
+    isRideAccepted: { type: Boolean, default: false },
     pickupLocation: {
       address: { type: String, required: true },
       latitude: { type: String },
@@ -51,7 +52,10 @@ const rideHistorySchema = new Schema<IRideHistory>(
       longitude: { type: String },
       boundingbox: { type: [String] },
     },
+    driver: { type: String, ref: "User" },
+    isRideAccepted: { type: Boolean },
   },
+
   {
     timestamps: false,
     versionKey: false,

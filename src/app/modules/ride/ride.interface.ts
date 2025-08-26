@@ -25,11 +25,14 @@ export interface IRide {
   otp?: number;
   fee: number;
   isRideOTPVerified?: boolean;
+  isRideAccepted?: boolean;
 }
 
 export interface IRideHistory {
   _id?: string;
   rideId: string;
+  driver?: string;
+  isRideAccepted?: boolean;
   status: RideStatus;
   updatedTimestamp: Date;
   fee?: number;

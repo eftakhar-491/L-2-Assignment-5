@@ -85,7 +85,6 @@ const updateUser = async (
     decodedToken.role === Role.ADMIN
   ) {
     if (userId !== decodedToken.userId) {
-      console.log("decodedToken", decodedToken);
       throw new AppError(401, "You are not authorized");
     }
   }

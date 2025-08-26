@@ -17,7 +17,6 @@ import { Admin, Driver, Rider } from "./user.model";
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     let user;
-    console.log(user);
 
     const userRole = req.body.role;
     switch (userRole) {

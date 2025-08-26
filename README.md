@@ -12,11 +12,11 @@ A robust backend API for a modern ride-sharing platform. Built with Node.js, Exp
 
 ## ✨ Key Features
 
--   **User Management**: User registration, login (credentials & Google), and profile management.
--   **Role-Based Access Control (RBAC)**: Differentiates between `RIDER`, `DRIVER`, and `ADMIN` roles with specific permissions.
--   **Ride Lifecycle Management**: Requesting rides, price calculation, ride acceptance/cancellation, and detailed ride history.
--   **Driver Operations**: Drivers can manage their availability, view nearby ride requests, and track their earnings.
--   **Enhanced Security**: JWT-based authentication, refresh tokens, OTP verification, and secure password management (change, set, forgot, reset).
+- **User Management**: User registration, login (credentials & Google), and profile management.
+- **Role-Based Access Control (RBAC)**: Differentiates between `RIDER`, `DRIVER`, and `ADMIN` roles with specific permissions.
+- **Ride Lifecycle Management**: Requesting rides, price calculation, ride acceptance/cancellation, and detailed ride history.
+- **Driver Operations**: Drivers can manage their availability, view nearby ride requests, and track their earnings.
+- **Enhanced Security**: JWT-based authentication, refresh tokens, OTP verification, and secure password management (change, set, forgot, reset).
 
 ---
 
@@ -26,28 +26,32 @@ Follow these steps to get the project up and running on your local machine.
 
 #### Prerequisites
 
--   Node.js (v18 or higher recommended)
--   NPM
--   MongoDB instance (local or cloud)
+- Node.js (v18 or higher recommended)
+- NPM
+- MongoDB instance (local or cloud)
 
 #### Installation
 
 1.  **Clone the repository:**
+
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/eftakhar-491/L-2-Assignment-5.git
     cd l-2-assignment-5
     ```
 
 2.  **Install dependencies:**
+
     ```bash
     npm install
     ```
 
 3.  **Set up environment variables:**
     Create a `.env` file in the root directory by copying the example file.
+
     ```bash
     cp .env.example .env
     ```
+
     > **Note:** Open the newly created `.env` file and fill in all the required values as shown in the section below.
 
 4.  **Run the development server:**
@@ -116,55 +120,55 @@ All endpoints are prefixed with `/api/v1`.
 
 ### Authentication (`/auth`)
 
-| Method | Endpoint | Description | Access Control |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/login` | Logs in a user with credentials. | Public |
-| `GET` | `/refresh-token` | Generates a new access token via refresh token. | Public (Cookie) |
-| `POST` | `/logout` | Logs out the user by clearing cookies. | Authenticated |
-| `POST` | `/change-password` | Allows an authenticated user to change their password. | Authenticated |
-| `POST` | `/set-password` | Allows a user to set their password. | Authenticated |
-| `POST` | `/forgot-password` | Initiates the password reset process via email. | Public |
-| `POST` | `/reset-password` | Resets password using a token from the email. | Authenticated (Temp Token) |
-| `GET` | `/google` | Initiates Google OAuth2 login. | Public |
-| `GET` | `/google/callback` | Callback URL for Google OAuth. | Public |
+| Method | Endpoint           | Description                                            | Access Control             |
+| :----- | :----------------- | :----------------------------------------------------- | :------------------------- |
+| `POST` | `/login`           | Logs in a user with credentials.                       | Public                     |
+| `GET`  | `/refresh-token`   | Generates a new access token via refresh token.        | Public (Cookie)            |
+| `POST` | `/logout`          | Logs out the user by clearing cookies.                 | Authenticated              |
+| `POST` | `/change-password` | Allows an authenticated user to change their password. | Authenticated              |
+| `POST` | `/set-password`    | Allows a user to set their password.                   | Authenticated              |
+| `POST` | `/forgot-password` | Initiates the password reset process via email.        | Public                     |
+| `POST` | `/reset-password`  | Resets password using a token from the email.          | Authenticated (Temp Token) |
+| `GET`  | `/google`          | Initiates Google OAuth2 login.                         | Public                     |
+| `GET`  | `/google/callback` | Callback URL for Google OAuth.                         | Public                     |
 
 ### User (`/user`)
 
-| Method | Endpoint | Description | Access Control |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/register` | Creates a new user (typically a `RIDER`). | Public |
-| `GET` | `/all-users` | Retrieves a list of all users. | `ADMIN` |
-| `GET` | `/me` | Gets the profile of the currently logged-in user. | Authenticated |
-| `GET` | `/:id` | Retrieves a single user by their ID. | `ADMIN` |
-| `PATCH` | `/:id` | Updates a user's profile information. | Authenticated |
+| Method  | Endpoint     | Description                                       | Access Control |
+| :------ | :----------- | :------------------------------------------------ | :------------- |
+| `POST`  | `/register`  | Creates a new user (typically a `RIDER`).         | Public         |
+| `GET`   | `/all-users` | Retrieves a list of all users.                    | `ADMIN`        |
+| `GET`   | `/me`        | Gets the profile of the currently logged-in user. | Authenticated  |
+| `GET`   | `/:id`       | Retrieves a single user by their ID.              | `ADMIN`        |
+| `PATCH` | `/:id`       | Updates a user's profile information.             | Authenticated  |
 
 ### OTP (`/otp`)
 
-| Method | Endpoint | Description | Access Control |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/email-otp-send` | Sends a One-Time Password to the user's email. | Public |
-| `POST` | `/email-otp-verify` | Verifies the OTP sent to the user's email. | Public |
+| Method | Endpoint            | Description                                    | Access Control |
+| :----- | :------------------ | :--------------------------------------------- | :------------- |
+| `POST` | `/email-otp-send`   | Sends a One-Time Password to the user's email. | Public         |
+| `POST` | `/email-otp-verify` | Verifies the OTP sent to the user's email.     | Public         |
 
 ### Ride (`/ride`)
 
-| Method | Endpoint | Description | Access Control |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/price-and-details` | Calculates estimated price and distance for a ride. | `RIDER`, `ADMIN` |
-| `POST` | `/request-ride` | A rider requests a new ride. | `RIDER`, `ADMIN` |
-| `PATCH` | `/ride-accept/:rideId` | A driver accepts a ride request. | `DRIVER`, `ADMIN` |
-| `PATCH` | `/ride-cancel/:rideId` | Cancels a ride. | `RIDER`, `DRIVER`, `ADMIN` |
-| `PATCH` | `/ride-picked-up-otp-send/:rideId` | Driver confirms pickup and sends OTP to rider. | `DRIVER`, `ADMIN` |
-| `PATCH` | `/ride-otp-verify/:rideId` | Rider verifies OTP to confirm ride start. | `RIDER`, `ADMIN` |
-| `PATCH` | `/ride-complete/:rideId` | Driver marks the ride as complete. | `DRIVER`, `ADMIN` |
-| `GET` | `/ride-history/:rideId` | Retrieves the history of a specific ride. | `RIDER`, `DRIVER`, `ADMIN` |
-| `GET` | `/all-rides` | Retrieves all rides in the system. | `ADMIN` |
-| `GET` | `/rider-past-ride` | Gets past rides for the logged-in rider. | `RIDER` |
+| Method  | Endpoint                           | Description                                         | Access Control             |
+| :------ | :--------------------------------- | :-------------------------------------------------- | :------------------------- |
+| `POST`  | `/price-and-details`               | Calculates estimated price and distance for a ride. | `RIDER`, `ADMIN`           |
+| `POST`  | `/request-ride`                    | A rider requests a new ride.                        | `RIDER`, `ADMIN`           |
+| `PATCH` | `/ride-accept/:rideId`             | A driver accepts a ride request.                    | `DRIVER`, `ADMIN`          |
+| `PATCH` | `/ride-cancel/:rideId`             | Cancels a ride.                                     | `RIDER`, `DRIVER`, `ADMIN` |
+| `PATCH` | `/ride-picked-up-otp-send/:rideId` | Driver confirms pickup and sends OTP to rider.      | `DRIVER`, `ADMIN`          |
+| `PATCH` | `/ride-otp-verify/:rideId`         | Rider verifies OTP to confirm ride start.           | `RIDER`, `ADMIN`           |
+| `PATCH` | `/ride-complete/:rideId`           | Driver marks the ride as complete.                  | `DRIVER`, `ADMIN`          |
+| `GET`   | `/ride-history/:rideId`            | Retrieves the history of a specific ride.           | `RIDER`, `DRIVER`, `ADMIN` |
+| `GET`   | `/all-rides`                       | Retrieves all rides in the system.                  | `ADMIN`                    |
+| `GET`   | `/rider-past-ride`                 | Gets past rides for the logged-in rider.            | `RIDER`                    |
 
 ### Driver (`/driver`)
 
-| Method | Endpoint | Description | Access Control |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/total-earnings/:driverId` | Gets earnings history for a specific driver. | `DRIVER`, `ADMIN` |
-| `GET` | `/my-rides` | Gets ride history for the logged-in driver. | `DRIVER` |
-| `POST` | `/availability-status` | Updates the driver's availability (`ONLINE`/`OFFLINE`). | `DRIVER` |
-| `POST` | `/get-driver-nearest-rides` | Fetches ride requests nearest to the driver. | `DRIVER` |
+| Method | Endpoint                    | Description                                             | Access Control    |
+| :----- | :-------------------------- | :------------------------------------------------------ | :---------------- |
+| `GET`  | `/total-earnings/:driverId` | Gets earnings history for a specific driver.            | `DRIVER`, `ADMIN` |
+| `GET`  | `/my-rides`                 | Gets ride history for the logged-in driver.             | `DRIVER`          |
+| `POST` | `/availability-status`      | Updates the driver's availability (`ONLINE`/`OFFLINE`). | `DRIVER`          |
+| `POST` | `/get-driver-nearest-rides` | Fetches ride requests nearest to the driver.            | `DRIVER`          |

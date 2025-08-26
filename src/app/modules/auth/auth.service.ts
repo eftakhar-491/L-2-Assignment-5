@@ -50,7 +50,7 @@ const resetPassword = async (
 };
 const forgotPassword = async (email: string) => {
   const isUserExist = await User.findOne({ email });
-  console.log(isUserExist);
+
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User does not exist");
   }

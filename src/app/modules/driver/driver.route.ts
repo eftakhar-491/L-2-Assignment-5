@@ -11,7 +11,7 @@ const route = Router();
 
 route.get(
   "/total-earnings/:driverId",
-  checkAuth(Role.ADMIN, Role.DRIVER),
+  checkAuth(Role.DRIVER),
   driverControllers.getDriverEarningHistory
 );
 route.get(

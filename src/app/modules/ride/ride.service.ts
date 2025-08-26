@@ -9,6 +9,7 @@ import { generateOtp } from "../../utils/generateOtp";
 import { redisClient } from "../../config/redis.config";
 import { sendEmail } from "../../utils/sendEmail";
 import getNearestLocations from "../../helpers/handleNearestRide";
+import { IsDriverActive } from "../user/user.interface";
 const OTP_EXPIRATION = 2 * 60;
 
 const createRide = async (payload: Partial<IRide>, req: Request) => {
@@ -22,10 +23,19 @@ const createRide = async (payload: Partial<IRide>, req: Request) => {
     );
   }
   const isUserExist = await User.findOne({ email });
-  console.log(isUserExist);
 
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Are not Exist");
+  }
+  const rides = await Ride.find({
+    rider: isUserExist._id,
+    status: { $in: ["REQUESTED", "ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+  });
+  if (rides.length > 3) {
+    return {
+      alreadyMaxRequested: true,
+      message: "You have reached the maximum number of ride requests.",
+    };
   }
   //   const pickupGeoLocationPromise = await fetch(`
   //       https://geocode.maps.co/search?q=${pickupLocation?.address}&api_key=${envVars.GEO_API_KEY}
@@ -203,11 +213,22 @@ const rideAccept = async (
   if (!ride || !driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride or Driver not found");
   }
+  if (
+    driver.isActive === IsDriverActive.REQUESTED ||
+    driver.isActive === IsDriverActive.SUSPENDED ||
+    driver.isActive === IsDriverActive.INACTIVE
+  ) {
+    throw new AppError(httpStatus.FORBIDDEN, "Driver is not Approved");
+  }
+  if (ride.isRideAccepted) {
+    return "Already Ride is accepted";
+  }
+
   if (!driver.isOnline) {
     return "Driver is not online";
   }
   if (driver.isRideAccepted) {
-    return "you already accepted a ride";
+    return "already accepted a ride";
   }
 
   if (ride.status === status) {
@@ -219,7 +240,10 @@ const rideAccept = async (
   //     "Ride can only be accepted from REQUESTED status"
   //   );
   // }
-  await Ride.updateOne({ _id: rideId }, { status, driver: driverId });
+  await Ride.updateOne(
+    { _id: rideId },
+    { status, driver: driverId, isRideAccepted: true }
+  );
   await Driver.updateOne({ _id: driverId }, { isRideAccepted: true });
   await RideHistory.create({
     rideId,
@@ -239,10 +263,56 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
+  const user = await User.findById(ride.rider);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
   if (ride.status === status) {
     return ride;
   }
+  switch (user.role) {
+    case "DRIVER":
+      await Ride.updateOne(
+        { _id: rideId },
+        { status, isRideAccepted: false, driver: "" }
+      );
+      await RideHistory.create({
+        rideId,
+        status,
+        isRideAccepted: false,
+        driver: "",
+        updatedTimestamp: new Date(),
+      });
+      break;
+    case "RIDER":
+      await Ride.updateOne({ _id: rideId }, { status });
+      await RideHistory.create({
+        rideId,
+        status,
+        updatedTimestamp: new Date(),
+      });
+      break;
+    case "ADMIN":
+      await Ride.updateOne(
+        { _id: rideId },
+        { status, driver: "", isRideAccepted: false }
+      );
+      await RideHistory.create({
+        rideId,
+        status,
+        driver: "",
+        isRideAccepted: false,
 
+        updatedTimestamp: new Date(),
+      });
+      break;
+    default:
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "User is not authorized to cancel this ride."
+      );
+      break;
+  }
   // if (
   //   ride.status === RideStatus.IN_TRANSIT ||
   //   ride.status === RideStatus.COMPLETED
@@ -252,13 +322,6 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
   //     "Ride cannot be cancelled once it is in transit or completed"
   //   );
   // }
-
-  await Ride.updateOne({ _id: rideId }, { status });
-  await RideHistory.create({
-    rideId,
-    status,
-    updatedTimestamp: new Date(),
-  });
 
   const updatedRide = await Ride.findById(rideId);
 
