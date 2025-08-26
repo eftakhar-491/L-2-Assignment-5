@@ -25,6 +25,7 @@ router.patch(
   "/:id",
   checkAuth(...Object.values(Role)),
   checkRole(...Object.values(Role)),
+  validateRequest(updateUserZodSchema),
   UserControllers.updateUser
 );
 

@@ -8,7 +8,7 @@ import {
   IUser,
   Role,
 } from "./user.interface";
-import { Driver, Rider } from "./user.model";
+import { Driver, Rider, User } from "./user.model";
 import httpStatus from "http-status-codes";
 import bcryptjs from "bcryptjs";
 import { JwtPayload } from "jsonwebtoken";
@@ -95,10 +95,14 @@ const updateUser = async (
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
 
-  const newUpdatedUser = await Model.findByIdAndUpdate(userId, payload, {
-    new: true,
-    runValidators: true,
-  });
+  const { password: $pass$, ...newUpdatedUser } = await Model.findByIdAndUpdate(
+    userId,
+    payload,
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).lean();
 
   return newUpdatedUser;
 };
@@ -122,12 +126,13 @@ const getAllUsers = async (query: Record<string, string>, Model: any) => {
     meta,
   };
 };
-const getSingleUser = async (id: string, Model: any) => {
-  const user = await Model.findById(id).select("-password");
+const getSingleUser = async (id: string) => {
+  const user = await User.findById(id).select("-password");
   return {
     data: user,
   };
 };
+
 const getMe = async (userId: string, Model: any) => {
   const user = await Model.findById(userId).select("-password");
   return {

@@ -195,24 +195,8 @@ const getSingleUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
 
-    let user;
+    const user = await UserServices.getSingleUser(id);
 
-    const userRole = (req.user as JwtPayload).role as string;
-    switch (userRole) {
-      case Role.RIDER:
-        // Handle rider specific logic
-        user = await UserServices.getSingleUser(id, Rider);
-        break;
-      case Role.DRIVER:
-        // Handle driver specific logic
-        user = await UserServices.getSingleUser(id, Driver);
-        break;
-      case Role.ADMIN:
-        user = await UserServices.getSingleUser(id, Admin);
-        break;
-      default:
-        throw new AppError(httpStatus.FORBIDDEN, "Invalid user role");
-    }
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
