@@ -8,7 +8,7 @@ import {
   IUser,
   Role,
 } from "./user.interface";
-import { Driver, Rider, User } from "./user.model";
+import { Admin, Driver, Rider, User } from "./user.model";
 import httpStatus from "http-status-codes";
 import bcryptjs from "bcryptjs";
 import { JwtPayload } from "jsonwebtoken";
@@ -139,6 +139,61 @@ const getMe = async (userId: string, Model: any) => {
     data: user,
   };
 };
+const updateUserData = async (userId: string, payload: Partial<any>) => {
+  // Step 1: Find base user
+  const existingUser = await User.findById(userId);
+  if (!existingUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Step 2: Update shared fields in User
+  const sharedFields: any = {};
+  if (payload.name) sharedFields.name = payload.name;
+  if (payload.email) sharedFields.email = payload.email;
+  if (payload.role) sharedFields.role = payload.role;
+
+  const updatedUser = await User.findByIdAndUpdate(userId, sharedFields, {
+    new: true,
+    runValidators: true,
+  }).lean();
+
+  // Step 3: Update role-specific model
+  let roleDoc;
+  const role = payload.role || existingUser.role;
+
+  switch (role) {
+    case Role.RIDER:
+      roleDoc = await Rider.findByIdAndUpdate(userId, payload, {
+        new: true,
+        runValidators: true,
+      }).lean();
+      break;
+
+    case Role.DRIVER:
+      roleDoc = await Driver.findByIdAndUpdate(userId, payload, {
+        new: true,
+        runValidators: true,
+      }).lean();
+      break;
+
+    case Role.ADMIN:
+      roleDoc = await Admin.findByIdAndUpdate(userId, payload, {
+        new: true,
+        runValidators: true,
+      }).lean();
+      break;
+  }
+
+  // Step 4: Remove sensitive fields
+  if (updatedUser?.password) {
+    delete updatedUser.password;
+  }
+
+  return {
+    user: updatedUser,
+    roleData: roleDoc,
+  };
+};
 
 export const UserServices = {
   createUser,
@@ -146,4 +201,5 @@ export const UserServices = {
   getSingleUser,
   updateUser,
   getMe,
+  updateUserData,
 };

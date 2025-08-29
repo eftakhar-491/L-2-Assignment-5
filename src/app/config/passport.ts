@@ -130,7 +130,19 @@ passport.use(
             ],
           });
         }
-
+        if (
+          isUserExist &&
+          !isUserExist.auths.some((p: IAuthProvider) => p.provider === "google")
+        ) {
+          isUserExist = await User.findByIdAndUpdate(isUserExist._id, {
+            $push: {
+              auths: {
+                provider: "google",
+                providerId: profile.id,
+              },
+            },
+          });
+        }
         return done(null, isUserExist);
       } catch (error) {
         return done(error);

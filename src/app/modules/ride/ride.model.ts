@@ -15,6 +15,7 @@ const rideSchema = new Schema<IRide>(
       longitude: { type: String },
       boundingbox: { type: [String] },
     },
+    isDeleted: { type: Boolean, default: false },
     dropoffLocation: {
       address: { type: String, required: true },
       latitude: { type: String },
@@ -52,7 +53,7 @@ const rideHistorySchema = new Schema<IRideHistory>(
       longitude: { type: String },
       boundingbox: { type: [String] },
     },
-    driver: { type: String, ref: "User" },
+    updatedBy: { type: String, ref: "User" },
     isRideAccepted: { type: Boolean },
   },
 

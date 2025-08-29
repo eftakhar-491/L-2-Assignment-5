@@ -22,6 +22,7 @@ export interface IRide {
   status: RideStatus;
   createdAt?: Date;
   updatedAt?: Date;
+  isDeleted?: boolean;
   otp?: number;
   fee: number;
   isRideOTPVerified?: boolean;
@@ -31,7 +32,8 @@ export interface IRide {
 export interface IRideHistory {
   _id?: string;
   rideId: string;
-  driver?: string;
+  updatedBy?: string;
+
   isRideAccepted?: boolean;
   status: RideStatus;
   updatedTimestamp: Date;

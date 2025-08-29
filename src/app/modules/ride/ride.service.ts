@@ -9,7 +9,7 @@ import { generateOtp } from "../../utils/generateOtp";
 import { redisClient } from "../../config/redis.config";
 import { sendEmail } from "../../utils/sendEmail";
 import getNearestLocations from "../../helpers/handleNearestRide";
-import { IsDriverActive } from "../user/user.interface";
+import { IsDriverActive, Role } from "../user/user.interface";
 const OTP_EXPIRATION = 2 * 60;
 
 const createRide = async (payload: Partial<IRide>, req: Request) => {
@@ -221,14 +221,20 @@ const rideAccept = async (
     throw new AppError(httpStatus.FORBIDDEN, "Driver is not Approved");
   }
   if (ride.isRideAccepted) {
-    return "Already Ride is accepted";
+    throw new AppError(httpStatus.BAD_REQUEST, "Already Ride is accepted");
   }
 
   if (!driver.isOnline) {
-    return "Driver is not online";
+    throw new AppError(httpStatus.BAD_REQUEST, "Driver is not online");
   }
   if (driver.isRideAccepted) {
-    return "already accepted a ride";
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Driver already accepted a ride"
+    );
+  }
+  if (ride.isDeleted) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Ride is deleted");
   }
 
   if (ride.status === status) {
@@ -254,7 +260,11 @@ const rideAccept = async (
   return updatedRide;
 };
 
-const rideCancel = async (rideId: string, status: RideStatus) => {
+const rideCancel = async (
+  rideId: string,
+  status: RideStatus,
+  accessUserId: string
+) => {
   if (!rideId || !status) {
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
   }
@@ -263,7 +273,8 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
-  const user = await User.findById(ride.rider);
+  const user = await User.findById(accessUserId);
+  console.log("user", user);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -274,21 +285,29 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
     case "DRIVER":
       await Ride.updateOne(
         { _id: rideId },
-        { status, isRideAccepted: false, driver: "" }
+        { status: RideStatus.REQUESTED, isRideAccepted: false, driver: "" }
       );
+      await Driver.updateOne({ _id: user._id }, { isRideAccepted: false });
       await RideHistory.create({
         rideId,
-        status: RideStatus.REQUESTED,
+        status,
+        updatedBy: user._id,
         isRideAccepted: false,
         driver: "",
         updatedTimestamp: new Date(),
       });
       break;
     case "RIDER":
-      await Ride.updateOne({ _id: rideId }, { status });
+      await Ride.updateOne(
+        { _id: rideId },
+        { status, isDeleted: true, isRideAccepted: false }
+      );
+      await Driver.updateOne({ _id: ride.driver }, { isRideAccepted: false });
       await RideHistory.create({
         rideId,
         status,
+        isDeleted: true,
+        updatedBy: user._id,
         updatedTimestamp: new Date(),
       });
       break;
@@ -297,10 +316,12 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
         { _id: rideId },
         { status, driver: "", isRideAccepted: false }
       );
+      await Driver.updateOne({ _id: user._id }, { isRideAccepted: false });
       await RideHistory.create({
         rideId,
         status,
         driver: "",
+        updatedBy: user._id,
         isRideAccepted: false,
 
         updatedTimestamp: new Date(),
@@ -311,7 +332,6 @@ const rideCancel = async (rideId: string, status: RideStatus) => {
         httpStatus.FORBIDDEN,
         "User is not authorized to cancel this ride."
       );
-      break;
   }
   // if (
   //   ride.status === RideStatus.IN_TRANSIT ||

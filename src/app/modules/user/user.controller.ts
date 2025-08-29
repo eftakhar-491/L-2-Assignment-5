@@ -12,7 +12,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import { verifyToken } from "../../utils/jwt";
 import { Role } from "./user.interface";
-import { Admin, Driver, Rider } from "./user.model";
+import { Admin, Driver, Rider, User } from "./user.model";
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -205,10 +205,30 @@ const getSingleUser = catchAsync(
     });
   }
 );
+export const updateUserData = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+    const payload = req.body;
+
+    const user = await UserServices.updateUserData(userId, payload);
+
+    if (!user) {
+      return next(new AppError(httpStatus.NOT_FOUND, "User not found"));
+    }
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User Data Updated Successfully",
+      data: user,
+    });
+  }
+);
 export const UserControllers = {
   createUser,
   updateUser,
   getAllUsers,
   getSingleUser,
   getMe,
+  updateUserData,
 };

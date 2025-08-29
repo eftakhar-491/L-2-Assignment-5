@@ -63,8 +63,12 @@ const rideCancel = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { rideId } = req.params;
     const { status } = req.body;
-
-    const updatedRide = await rideService.rideCancel(rideId, status);
+    const accessUserId = (req.user as JwtPayload).userId;
+    const updatedRide = await rideService.rideCancel(
+      rideId,
+      status,
+      accessUserId
+    );
 
     sendResponse(res, {
       success: true,

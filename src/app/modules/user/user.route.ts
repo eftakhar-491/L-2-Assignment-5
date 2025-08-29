@@ -28,5 +28,12 @@ router.patch(
   validateRequest(updateUserZodSchema),
   UserControllers.updateUser
 );
+// admin route
+router.patch(
+  "/:userId/update-user",
+  checkAuth(Role.ADMIN),
+
+  UserControllers.updateUserData
+);
 
 export const UserRoutes = router;
