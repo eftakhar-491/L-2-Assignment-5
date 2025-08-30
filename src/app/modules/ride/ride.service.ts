@@ -314,7 +314,7 @@ const rideCancel = async (
     case "ADMIN":
       await Ride.updateOne(
         { _id: rideId },
-        { status, driver: "", isRideAccepted: false }
+        { status: RideStatus.REQUESTED, driver: "", isRideAccepted: false }
       );
       await Driver.updateOne({ _id: user._id }, { isRideAccepted: false });
       await RideHistory.create({
