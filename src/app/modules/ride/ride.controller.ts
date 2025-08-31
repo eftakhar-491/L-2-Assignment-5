@@ -163,6 +163,21 @@ const getRiderPastRides = catchAsync(
     });
   }
 );
+const ridePayment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { rideId } = req.params;
+    const { paymentInfo } = req.body;
+
+    const updatedRide = await rideService.ridePayment(rideId, paymentInfo);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Ride payment processed successfully",
+      data: updatedRide,
+    });
+  }
+);
 export const rideController = {
   createRide,
   updateRide,
@@ -175,4 +190,5 @@ export const rideController = {
   rideComplete,
   getAllRides,
   getRiderPastRides,
+  ridePayment,
 };

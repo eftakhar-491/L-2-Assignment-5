@@ -323,7 +323,6 @@ const rideCancel = async (
         driver: "",
         updatedBy: user._id,
         isRideAccepted: false,
-
         updatedTimestamp: new Date(),
       });
       break;
@@ -403,7 +402,7 @@ const rideOtpSend = async (rideId: string, status: RideStatus) => {
 };
 const rideOtpVerify = async (otp: string, rideId: string) => {
   // const user = await User.findOne({ email, isVerified: false })
-  const ride = await Ride.findById(rideId);
+  const ride = await Ride.findById(rideId).lean();
 
   if (!ride) {
     throw new AppError(404, "Ride data not found");
@@ -482,8 +481,46 @@ const getAllRides = async () => {
   return rides;
 };
 const getRiderPastRides = async (riderId: string) => {
-  const rides = await Ride.find({ rider: riderId }).sort({ createdAt: -1 });
+  const rides = await Ride.findById(riderId);
   return rides;
+};
+
+const ridePayment = async (rideId: string, paymentInfo: any) => {
+  if (!rideId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid ride details");
+  }
+  const ride = await Ride.findById(rideId);
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+  if (ride.isPaid) {
+    throw new AppError(httpStatus.CONFLICT, "Ride is already paid");
+  }
+
+  if (ride.status !== RideStatus.COMPLETED) {
+    // Handle payment not completed
+    throw new AppError(httpStatus.PAYMENT_REQUIRED, "Payment not be accepted");
+  }
+
+  // Process payment (this is just a placeholder, implement your payment logic)
+  // const paymentResult = await processPayment(paymentInfo);
+  // if (!paymentResult.success) {
+  //   throw new AppError(httpStatus.PAYMENT_REQUIRED, "Payment failed");
+  // }
+
+  // Update ride status to completed
+  await Ride.updateOne(
+    { _id: rideId },
+    { status: RideStatus.COMPLETED, isPaid: true }
+  );
+  await Driver.updateOne({ _id: ride.driver }, { isRideAccepted: false });
+  await RideHistory.create({
+    rideId,
+    status: RideStatus.COMPLETED,
+    updatedTimestamp: new Date(),
+  });
+  const updatedRide = await Ride.findById(rideId);
+  return updatedRide;
 };
 export const rideService = {
   createRide,
@@ -498,4 +535,5 @@ export const rideService = {
   rideComplete,
   getAllRides,
   getRiderPastRides,
+  ridePayment,
 };

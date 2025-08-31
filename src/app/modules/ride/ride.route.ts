@@ -50,11 +50,17 @@ route.patch(
 );
 route.patch(
   "/ride-otp-verify/:rideId",
-  checkAuth(Role.ADMIN, Role.RIDER),
+  checkAuth(Role.ADMIN, Role.DRIVER),
 
   rideController.rideOtpVerify
 );
 // if successfully paid
+route.post(
+  "/payment/:rideId",
+  checkAuth(Role.RIDER),
+
+  rideController.ridePayment
+);
 route.patch(
   "/ride-complete/:rideId",
   checkAuth(Role.DRIVER, Role.ADMIN),

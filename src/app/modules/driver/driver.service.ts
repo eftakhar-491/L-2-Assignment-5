@@ -1,5 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
-import { IPickupAndDropoffLocation } from "../ride/ride.interface";
+import { IPickupAndDropoffLocation, RideStatus } from "../ride/ride.interface";
 import Ride from "../ride/ride.model";
 import { Driver } from "../user/user.model";
 import httpStatus from "http-status-codes";
@@ -11,7 +11,9 @@ const getDriverEarningHistory = async (driverId: string) => {
     { fee: 1, status: 1, _id: 1 }
   ).lean();
 
-  const completedRides = rides.filter((ride) => ride.status === "COMPLETED");
+  const completedRides = rides.filter(
+    (ride) => ride.status === RideStatus.COMPLETED
+  );
   const totalEarnings = completedRides.reduce(
     (sum, ride) => sum + (Number(ride.fee) || 0),
     0

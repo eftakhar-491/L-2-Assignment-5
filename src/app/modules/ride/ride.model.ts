@@ -27,6 +27,7 @@ const rideSchema = new Schema<IRide>(
       enum: Object.values(RideStatus),
       default: RideStatus.REQUESTED,
     },
+    isPaid: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -55,6 +56,7 @@ const rideHistorySchema = new Schema<IRideHistory>(
     },
     updatedBy: { type: String, ref: "User" },
     isRideAccepted: { type: Boolean },
+    isPaid: { type: Boolean },
   },
 
   {
