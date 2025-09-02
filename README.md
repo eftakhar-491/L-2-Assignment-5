@@ -114,6 +114,11 @@ REDIS_PORT=your-redis-port
 
 ---
 
+```
+#Api Testing : https://github.com/eftakhar-491/L-2-Assignment-5/blob/main/Rido%20Service%20API.postman_collection.json
+
+```
+
 ## Endpoints
 
 All endpoints are prefixed with `/api/v1`.
@@ -172,3 +177,8 @@ All endpoints are prefixed with `/api/v1`.
 | `GET`  | `/my-rides`                 | Gets ride history for the logged-in driver.             | `DRIVER`          |
 | `POST` | `/availability-status`      | Updates the driver's availability (`ONLINE`/`OFFLINE`). | `DRIVER`          |
 | `POST` | `/get-driver-nearest-rides` | Fetches ride requests nearest to the driver.            | `DRIVER`          |
+
+# Finaly
+
+This Ride-Sharing Service API is designed to be a scalable and secure foundation for modern ride-sharing applications.
+With robust role-based access control, real-time ride lifecycle management, and secure authentication mechanisms, it ensures that riders, drivers, and admins can interact seamlessly within the platform.
