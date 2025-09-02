@@ -1,0 +1,1153 @@
+{
+	"info": {
+		"_postman_id": "4ec0f0e9-32e8-4b00-8d26-7cc8117e85ad",
+		"name": "Rido Service API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36354212"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Drider\",\r\n    \"email\": \"eee@gmail.com\",\r\n    \"password\": \"Eee491@gmail.com\",\r\n    \"role\": \"DRIVER\",\r\n     \"vehicle\": {\r\n        \"type\": \"bike\",\r\n        \"number\": \"5215\",\r\n        \"model\": \"gixxer\"\r\n    }\r\n   \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/user/register",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjIxMzA0NiwiZXhwIjoxNzYzOTg5MDQ2fQ.pwm8Lll5Ak_UvfH2ZZsgpu3pebF2Hn8hAxuM0GY1DsE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/user/all-users",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"all-users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser-me",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjIxMzA0NiwiZXhwIjoxNzYzOTg5MDQ2fQ.pwm8Lll5Ak_UvfH2ZZsgpu3pebF2Hn8hAxuM0GY1DsE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"momo\" ,\r\n    \"phone\": \"01720233950\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/user/68adaf3483643622bf44b3d3",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"68adaf3483643622bf44b3d3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getMe",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjIxMzA0NiwiZXhwIjoxNzYzOTg5MDQ2fQ.pwm8Lll5Ak_UvfH2ZZsgpu3pebF2Hn8hAxuM0GY1DsE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/user/me",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSingleUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjIxMzA0NiwiZXhwIjoxNzYzOTg5MDQ2fQ.pwm8Lll5Ak_UvfH2ZZsgpu3pebF2Hn8hAxuM0GY1DsE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/user/68ad9200a3084d6709af5081",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"68ad9200a3084d6709af5081"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin-update user",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjIxMzA0NiwiZXhwIjoxNzYzOTg5MDQ2fQ.pwm8Lll5Ak_UvfH2ZZsgpu3pebF2Hn8hAxuM0GY1DsE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"isActive\": \"INACTIVE\",\r\n    \"role\" : \"RIDER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/user/update-user/68b19362dcf1fbd401685cef",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"update-user",
+								"68b19362dcf1fbd401685cef"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "otp",
+			"item": [
+				{
+					"name": "email-otp-send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjIxMzA0NiwiZXhwIjoxNzYzOTg5MDQ2fQ.pwm8Lll5Ak_UvfH2ZZsgpu3pebF2Hn8hAxuM0GY1DsE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"eftt042@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/otp/email-otp-send",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otp",
+								"email-otp-send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-otp-verify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOGI4MTU4N2E1MTM0NmI5YWYwNzEiLCJlbWFpbCI6ImVmdHQwNDJAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU2NDY2MDUxLCJleHAiOjE3NjQyNDIwNTF9.HOpWHDYJrzxVdoY5WPKbM1X3JDiXQ7dK11eb7exTY_s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"eftt042@gmail.com\",\r\n    \"otp\": \"4420\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/otp/email-otp-verify",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otp",
+								"email-otp-verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"eftt042@gmail.com\",\r\n    \"password\": \"Eftt042@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/login",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjQ2MzEwNywiZXhwIjoxNzU3MDY3OTA3fQ.b_NEfD7uFtbVpvaYUMP2O3Dp3OMF6XTQ1CrJVkDrROA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/refresh-token",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjQ2MzE5MCwiZXhwIjoxNzY0MjM5MTkwfQ.7JQCw3Rh9X54qnK_GHtNrqKY19AYdM6xH2oMm_JGvTg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/logout",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjQ2MzI4MSwiZXhwIjoxNzY0MjM5MjgxfQ.5AeDuottKcUE8YEArcYUCd3zcOyhJtBa5UTjIvXVKOo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldPassword\": \"Eftt0420@gmail.com\" ,\r\n    \"newPassword\" : \"Eftt042@gmail.com\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/change-password",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set-password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjQ2MzI4MSwiZXhwIjoxNzY0MjM5MjgxfQ.5AeDuottKcUE8YEArcYUCd3zcOyhJtBa5UTjIvXVKOo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Eftt0420@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/set-password",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"set-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forget-password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjQ2MzI4MSwiZXhwIjoxNzY0MjM5MjgxfQ.5AeDuottKcUE8YEArcYUCd3zcOyhJtBa5UTjIvXVKOo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"eftt0420@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/forgot-password",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset-password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGFkYWYzNDgzNjQzNjIyYmY0NGIzZDMiLCJlbWFpbCI6ImVmdHQwNDIwQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NjQ2MzI4MSwiZXhwIjoxNzY0MjM5MjgxfQ.5AeDuottKcUE8YEArcYUCd3zcOyhJtBa5UTjIvXVKOo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"68adaf3483643622bf44b3d3\",\r\n    \"newPassword\": \"Eftt0420@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/reset-password",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "google-login",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/auth/google",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"google"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ride",
+			"item": [
+				{
+					"name": "price-and-details",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOGI4MTU4N2E1MTM0NmI5YWYwNzEiLCJlbWFpbCI6ImVmdHQwNDJAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU2NDY2MDUxLCJleHAiOjE3NjQyNDIwNTF9.HOpWHDYJrzxVdoY5WPKbM1X3JDiXQ7dK11eb7exTY_s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rider\": \"688f8c5832556e9764ead0a1\",\r\n    \"pickupLocation\": {\r\n        \"address\": \"rampura btv dhaka\"\r\n    },\r\n    \"dropoffLocation\": {\r\n        \"address\": \"motijheel dhaka\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/price-and-details",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"price-and-details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "request-ride",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOGI4MTU4N2E1MTM0NmI5YWYwNzEiLCJlbWFpbCI6ImVmdHQwNDJAZ21haWwuY29tIiwicm9sZSI6IlJJREVSIiwiaWF0IjoxNzU2NDY2MDUxLCJleHAiOjE3NjQyNDIwNTF9.HOpWHDYJrzxVdoY5WPKbM1X3JDiXQ7dK11eb7exTY_s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fee\": 98,\r\n    \"rider\": \"68b18b81587a51346b9af071\",\r\n    \"pickupLocation\": {\r\n        \"address\": \"rampura btv dhaka\"\r\n    },\r\n    \"dropoffLocation\": {\r\n        \"address\": \"motijheel dhaka\"\r\n    }\r\n   \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/request-ride",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"request-ride"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/payment/68b18cb8587a51346b9af084",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"payment",
+								"68b18cb8587a51346b9af084"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride-accept",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"ACCEPTED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/ride-accept/68b18cb8587a51346b9af084",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"ride-accept",
+								"68b18cb8587a51346b9af084"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride-cancel",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"CANCELLED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/ride-cancel/68b18cb8587a51346b9af084",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"ride-cancel",
+								"68b18cb8587a51346b9af084"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride-picked-up-otp-send",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"PICKED_UP\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/ride-picked-up-otp-send/68b18cb8587a51346b9af084",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"ride-picked-up-otp-send",
+								"68b18cb8587a51346b9af084"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride-otp-verify",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"otp\": \"2874\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/ride-otp-verify/68b18cb8587a51346b9af084",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"ride-otp-verify",
+								"68b18cb8587a51346b9af084"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride-complete",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGE4OThiMTdkNDNmM2FlN2Y1NDM5MDIiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NTg3OTYwNCwiZXhwIjoxNzYzNjU1NjA0fQ.Jr_Vf4c50-gdm5ZUo2I5DqRIFWUZBZekcrViKM19sjs",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\":\"COMPLETED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/ride-complete/68a899437d43f3ae7f54390c",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"ride-complete",
+								"68a899437d43f3ae7f54390c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride-history",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/ride-history/68b18cb8587a51346b9af084",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"ride-history",
+								"68b18cb8587a51346b9af084"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rider-past-ride",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGE4NDVmNTY0YWFiOGU3YWU5NTA1NzkiLCJlbWFpbCI6IkVmdDQ5MTJAZ21haWwuY29tIiwicm9sZSI6IkRSSVZFUiIsImlhdCI6MTc1NTg1ODQyNCwiZXhwIjoxNzYzNjM0NDI0fQ.gCP598mT4BKwxBKqrm1qXm6x05AeFu2OYEnGczoFYxw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/rider-past-ride",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"rider-past-ride"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all-rides",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGE4NDVmNTY0YWFiOGU3YWU5NTA1NzkiLCJlbWFpbCI6IkVmdDQ5MTJAZ21haWwuY29tIiwicm9sZSI6IkRSSVZFUiIsImlhdCI6MTc1NTg1ODQyNCwiZXhwIjoxNzYzNjM0NDI0fQ.gCP598mT4BKwxBKqrm1qXm6x05AeFu2OYEnGczoFYxw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/ride/all-rides",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ride",
+								"all-rides"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "driver",
+			"item": [
+				{
+					"name": "total-earnings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/driver/total-earnings/68b19362dcf1fbd401685cef",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"driver",
+								"total-earnings",
+								"68b19362dcf1fbd401685cef"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "availability-status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"isOnline\":true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/driver/availability-status",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"driver",
+								"availability-status"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-driver-nearest-rides",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"latitude\": \"23.7507983\", \"longitude\": \"90.4219536\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/driver/get-driver-nearest-rides",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"driver",
+								"get-driver-nearest-rides"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my-rides",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIxOTM2MmRjZjFmYmQ0MDE2ODVjZWYiLCJlbWFpbCI6ImVmdGFraGFyNDkxQGdtYWlsLmNvbSIsInJvbGUiOiJEUklWRVIiLCJpYXQiOjE3NTY0NjgwNjksImV4cCI6MTc2NDI0NDA2OX0.4FMJUArBgdFboZBe-GnpICFiBOOjWl1Gt5xFd2QdMyU",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://ride-sharing-app-ten.vercel.app/api/v1/driver/my-rides",
+							"protocol": "https",
+							"host": [
+								"ride-sharing-app-ten",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"driver",
+								"my-rides"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
