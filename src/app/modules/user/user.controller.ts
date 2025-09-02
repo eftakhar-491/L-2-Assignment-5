@@ -209,8 +209,8 @@ export const updateUserData = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId;
     const payload = req.body;
-
-    const user = await UserServices.updateUserData(userId, payload);
+    const accessRole = (req.user as JwtPayload).role as Role;
+    const user = await UserServices.updateUserData(userId, payload, accessRole);
 
     if (!user) {
       return next(new AppError(httpStatus.NOT_FOUND, "User not found"));

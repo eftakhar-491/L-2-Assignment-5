@@ -5,6 +5,7 @@ import {
   IAuthProvider,
   IDriver,
   IRider,
+  IsActive,
   IUser,
   Role,
 } from "./user.interface";
@@ -17,6 +18,7 @@ import { userSearchableFields } from "./user.constant";
 import { sendEmail } from "../../utils/sendEmail";
 import { redisClient } from "../../config/redis.config";
 import { generateOtp } from "../../utils/generateOtp";
+import { canUpdateStatus } from "../../helpers/canUpdateIsActive";
 const OTP_EXPIRATION = 2 * 60;
 const createUser = async (payload: Partial<IUser>, Model: any) => {
   const { email, password, role, ...rest } = payload as Partial<IUser>;
@@ -139,27 +141,55 @@ const getMe = async (userId: string, Model: any) => {
     data: user,
   };
 };
-const updateUserData = async (userId: string, payload: Partial<any>) => {
-  // Step 1: Find base user
-  const existingUser = await User.findById(userId);
+const updateUserData = async (
+  userId: string,
+  payload: Partial<IRider | IDriver | IAdmin>,
+  accessRole: Role
+) => {
+  const existingUser = await User.findById(userId).lean();
   if (!existingUser) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  // Step 2: Update shared fields in User
   const sharedFields: any = {};
   if (payload.name) sharedFields.name = payload.name;
   if (payload.email) sharedFields.email = payload.email;
-  if (payload.role) sharedFields.role = payload.role;
+  if (payload.phone) sharedFields.phone = payload.phone;
+  if (payload.picture) sharedFields.picture = payload.picture;
+  if (payload.address) sharedFields.address = payload.address;
+  if (
+    (!payload.isDeleted || payload.isDeleted) &&
+    typeof payload.isDeleted !== "undefined"
+  )
+    sharedFields.isDeleted = payload.isDeleted;
+
+  if (payload.role && accessRole !== Role.ADMIN) {
+    throw new AppError(httpStatus.FORBIDDEN, "Only admin can change role");
+  } else {
+    await User.deleteOne({ _id: userId });
+
+    if (payload.role === Role.RIDER) {
+      await Rider.create({ ...existingUser, _id: userId, role: payload.role });
+    } else if (payload.role === Role.DRIVER) {
+      await Driver.create({ ...existingUser, _id: userId, role: payload.role });
+    } else if (payload.role === Role.ADMIN) {
+      await Admin.create({ ...existingUser, _id: userId, role: payload.role });
+    }
+  }
+  if (payload.isActive && !canUpdateStatus(accessRole, payload.isActive)) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to change isActive status"
+    );
+  }
 
   const updatedUser = await User.findByIdAndUpdate(userId, sharedFields, {
     new: true,
     runValidators: true,
   }).lean();
 
-  // Step 3: Update role-specific model
   let roleDoc;
-  const role = payload.role || existingUser.role;
+  const role = existingUser.role || accessRole;
 
   switch (role) {
     case Role.RIDER:
@@ -167,6 +197,7 @@ const updateUserData = async (userId: string, payload: Partial<any>) => {
         new: true,
         runValidators: true,
       }).lean();
+
       break;
 
     case Role.DRIVER:
@@ -184,14 +215,12 @@ const updateUserData = async (userId: string, payload: Partial<any>) => {
       break;
   }
 
-  // Step 4: Remove sensitive fields
   if (updatedUser?.password) {
     delete updatedUser.password;
   }
 
   return {
-    user: updatedUser,
-    roleData: roleDoc,
+    user: { ...updatedUser, ...roleDoc },
   };
 };
 

@@ -37,30 +37,30 @@ const rideSchema = new Schema<IRide>(
 const rideHistorySchema = new Schema<IRideHistory>(
   {
     rideId: { type: String, ref: "Ride", required: true },
-    status: { type: String, enum: Object.values(RideStatus) },
-    updatedTimestamp: { type: Date, required: true },
-    fee: { type: Number },
-    otp: { type: Number },
-    isRideOTPVerified: { type: Boolean },
+    updatedTimestamp: { type: Date, required: true, default: null },
+    updatedBy: { type: String, default: null },
+    isPaid: { type: Boolean, default: null },
+    isRideAccepted: { type: Boolean, default: null },
+    status: { type: String, enum: Object.values(RideStatus), default: null },
+    fee: { type: Number, default: null },
+    otp: { type: Number, default: null },
+    isRideOTPVerified: { type: Boolean, default: null },
+    isDeleted: { type: Boolean, default: null },
     pickupLocation: {
-      address: { type: String },
-      latitude: { type: String },
-      longitude: { type: String },
-      boundingbox: { type: [String] },
+      address: { type: String, default: null },
+      latitude: { type: String, default: null },
+      longitude: { type: String, default: null },
+      boundingbox: { type: [String], default: null },
     },
     dropoffLocation: {
-      address: { type: String },
-      latitude: { type: String },
-      longitude: { type: String },
-      boundingbox: { type: [String] },
+      address: { type: String, default: null },
+      latitude: { type: String, default: null },
+      longitude: { type: String, default: null },
+      boundingbox: { type: [String], default: null },
     },
-    updatedBy: { type: String, ref: "User" },
-    isRideAccepted: { type: Boolean },
-    isPaid: { type: Boolean },
   },
-
   {
-    timestamps: false,
+    timestamps: true,
     versionKey: false,
   }
 );

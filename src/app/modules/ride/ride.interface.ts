@@ -31,16 +31,19 @@ export interface IRide {
 }
 
 export interface IRideHistory {
+  isDeleted?: boolean;
   _id?: string;
   rideId: string;
   updatedBy?: string;
   isPaid?: boolean;
   isRideAccepted?: boolean;
-  status: RideStatus;
+  status?: RideStatus;
   updatedTimestamp: Date;
   fee?: number;
   otp?: number;
   isRideOTPVerified?: boolean;
-  pickupLocation: IPickupAndDropoffLocation;
-  dropoffLocation: IPickupAndDropoffLocation;
+  pickupLocation?: IPickupAndDropoffLocation;
+  dropoffLocation?: IPickupAndDropoffLocation;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

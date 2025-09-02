@@ -30,8 +30,8 @@ router.patch(
 );
 // admin route
 router.patch(
-  "/:userId/update-user",
-  checkAuth(Role.ADMIN),
+  "/update-user/:userId",
+  checkAuth(...Object.values(Role)),
 
   UserControllers.updateUserData
 );

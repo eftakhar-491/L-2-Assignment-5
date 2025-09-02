@@ -314,7 +314,12 @@ const rideCancel = async (
     case "ADMIN":
       await Ride.updateOne(
         { _id: rideId },
-        { status: RideStatus.REQUESTED, driver: "", isRideAccepted: false }
+        {
+          status: RideStatus.CANCELLED,
+          driver: "",
+          isRideAccepted: false,
+          isDeleted: true,
+        }
       );
       await Driver.updateOne({ _id: user._id }, { isRideAccepted: false });
       await RideHistory.create({
@@ -392,6 +397,9 @@ const rideOtpSend = async (rideId: string, status: RideStatus) => {
     await RideHistory.create({
       rideId,
       status,
+      updatedBy: ride.driver,
+      isRideAccepted: false,
+
       updatedTimestamp: new Date(),
     });
   }
@@ -458,6 +466,7 @@ const rideComplete = async (rideId: string, status: RideStatus.COMPLETED) => {
   await RideHistory.create({
     rideId,
     status,
+    updatedBy: ride.driver,
     updatedTimestamp: new Date(),
   });
   const updatedRide = await Ride.findById(rideId);
@@ -509,14 +518,12 @@ const ridePayment = async (rideId: string, paymentInfo: any) => {
   // }
 
   // Update ride status to completed
-  await Ride.updateOne(
-    { _id: rideId },
-    { status: RideStatus.COMPLETED, isPaid: true }
-  );
+  await Ride.updateOne({ _id: rideId }, { isPaid: true });
   await Driver.updateOne({ _id: ride.driver }, { isRideAccepted: false });
   await RideHistory.create({
     rideId,
-    status: RideStatus.COMPLETED,
+    updatedBy: ride.driver,
+    isPaid: true,
     updatedTimestamp: new Date(),
   });
   const updatedRide = await Ride.findById(rideId);
