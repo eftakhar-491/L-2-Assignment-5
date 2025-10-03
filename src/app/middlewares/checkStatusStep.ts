@@ -44,8 +44,8 @@ export const checkStatusStep =
         }
         if (
           status === RideStatus.PICKED_UP &&
-          (ride.status === RideStatus.PICKED_UP ||
-            ride.status === RideStatus.REQUESTED ||
+          // ride.status === RideStatus.PICKED_UP ||
+          (ride.status === RideStatus.REQUESTED ||
             ride.status === RideStatus.IN_TRANSIT ||
             ride.status === RideStatus.COMPLETED ||
             ride.status === RideStatus.CANCELLED)
