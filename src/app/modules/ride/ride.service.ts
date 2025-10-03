@@ -461,14 +461,23 @@ const rideComplete = async (rideId: string, status: RideStatus.COMPLETED) => {
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
+  try {
+    await Ride.updateOne({ _id: rideId }, { isPaid: true, status });
+    await Driver.updateOne({ _id: ride.driver }, { isRideAccepted: false });
 
-  await Ride.updateOne({ _id: rideId }, { status });
-  await RideHistory.create({
-    rideId,
-    status,
-    updatedBy: ride.driver,
-    updatedTimestamp: new Date(),
-  });
+    await RideHistory.create({
+      rideId,
+      status,
+      updatedBy: ride.driver,
+      updatedTimestamp: new Date(),
+    });
+  } catch (error) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Ride completion failed- all data not updated"
+    );
+  }
+
   const updatedRide = await Ride.findById(rideId);
   return updatedRide;
 };
@@ -516,16 +525,24 @@ const ridePayment = async (rideId: string, paymentInfo: any) => {
   // if (!paymentResult.success) {
   //   throw new AppError(httpStatus.PAYMENT_REQUIRED, "Payment failed");
   // }
+  try {
+    await Ride.updateOne({ _id: rideId }, { isPaid: true });
+    await Driver.updateOne({ _id: ride.driver }, { isRideAccepted: false });
+    await RideHistory.create({
+      rideId,
+      updatedBy: ride.driver,
+      isPaid: true,
+      updatedTimestamp: new Date(),
+    });
+  } catch (error) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Payment failed- all data not updated"
+    );
+  }
 
   // Update ride status to completed
-  await Ride.updateOne({ _id: rideId }, { isPaid: true });
-  await Driver.updateOne({ _id: ride.driver }, { isRideAccepted: false });
-  await RideHistory.create({
-    rideId,
-    updatedBy: ride.driver,
-    isPaid: true,
-    updatedTimestamp: new Date(),
-  });
+
   const updatedRide = await Ride.findById(rideId);
   return updatedRide;
 };
